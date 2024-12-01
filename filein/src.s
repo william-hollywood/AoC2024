@@ -18,6 +18,8 @@ endstr: .string "\n-----\nFin.\n-----\n"
 	li a0, FILE_BUFFER
 	li a1, UART_BASE
 	call puts
+	li a0, FILE_BUFFER
+	call stoi
 	la a0, endstr
 	li a1, UART_BASE
 	call puts
