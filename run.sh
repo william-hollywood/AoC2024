@@ -3,7 +3,7 @@
 TARGET=$1
 ACTION=$2
 
-echo "---------ASSEMBING-------"
+echo "---------ASSEMBLING-------"
 riscv64-unknown-elf-as -march=rv32im -mabi=ilp32 "${TARGET}/src.s" -o "${TARGET}/src.o"
 riscv64-unknown-elf-as -march=rv32im -mabi=ilp32 lib.s -o lib.o
 
@@ -30,5 +30,8 @@ fi
 
 printf "%s\0" "${FILE_CONTENT}" | qemu-system-riscv32 -nographic "${ARGS[@]}" -serial mon:stdio -machine virt -bios "${RUN_BIN}"
 
-rm "${RUNNING_FILE_FILE}"
+if [ "${ACTION}" == "debug" ];
+then
+	rm "${RUNNING_FILE_FILE}"
+fi
 echo "Done"

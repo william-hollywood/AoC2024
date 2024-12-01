@@ -1,7 +1,7 @@
 .section .lib
 # gets - load the file from stdin into ram
 # a0 - file buffer location
-# a1 - UART_BASE address
+# a1 - READ location
 .global gets
 gets:
 1: 
@@ -13,9 +13,9 @@ gets:
 2:
 	ret
 
-# puts - Output a string to the UART
+# puts - Output a string to an address
 # a0 - string address
-# a1 - UART_BASE address
+# a1 - WRITE location
 .global puts
 puts:
 1:
@@ -34,8 +34,7 @@ stoi:
 	li t0, 0
 1:
 	lb t0, 0(a0)
-	li t3, '0'
-	sub t0, t0, t3
+	addi t0, t0, -'0'
 	li t3, 10
 	bge t0, t3, 2f
 	mul t1, t1, t3
@@ -43,4 +42,8 @@ stoi:
 	j 1b
 2:
 	mv a0, t1
+	ret
+
+.global itos
+itos:
 	ret
