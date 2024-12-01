@@ -5,9 +5,10 @@ ACTION=$2
 
 echo "---------ASSEMBING-------"
 riscv64-unknown-elf-as -march=rv32i -mabi=ilp32 "${TARGET}/src.s" -o "${TARGET}/src.o"
+riscv64-unknown-elf-as -march=rv32i -mabi=ilp32 "lib.s" -o "lib.o"
 
 echo "---------LINKING---------"
-riscv64-unknown-elf-gcc -ggdb -T baremetal.ld -march=rv32i -mabi=ilp32 -nostdlib -static -o "${TARGET}/${TARGET}.bin" "${TARGET}/src.o"
+riscv64-unknown-elf-gcc -ggdb -T baremetal.ld -march=rv32i -mabi=ilp32 -nostdlib -static -o "${TARGET}/${TARGET}.bin" lib.o "${TARGET}/src.o"
 
 echo "---------RUNNING---------"
 

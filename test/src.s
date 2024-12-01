@@ -9,14 +9,3 @@ helloworld: .string "Hello World\n"
 	call puts
 
 loop: j loop
-
-puts:
-1:
-	lb t0, 0(a0)
-	beq zero, t0, 2f
-	sb t0, (a1)
-	addi a0, a0, 1
-	j 1b
-2:
-	ret
-
