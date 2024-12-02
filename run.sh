@@ -3,13 +3,21 @@
 TARGET=$1
 ACTION=$2
 
+# Ubuntu 20.04 binaries from the github only had 32 bit
+if lsb_release -d | grep 20.04;
+then
+	RV="riscv32"
+else
+	RV="riscv64"
+fi
+
 echo "---------ASSEMBLING-------"
-riscv64-unknown-elf-as -march=rv32im -mabi=ilp32 "${TARGET}/src.s" -o "${TARGET}/src.o"
-riscv64-unknown-elf-as -march=rv32im -mabi=ilp32 lib.s -o lib.o
+"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "${TARGET}/src.s" -o "${TARGET}/src.o"
+"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 lib.s -o lib.o
 
 echo "---------LINKING---------"
 RUN_BIN="${TARGET}/${TARGET}.bin"
-riscv64-unknown-elf-gcc -g -T baremetal.ld -march=rv32im -mabi=ilp32 -nostdlib -static -o "${RUN_BIN}" lib.o "${TARGET}/src.o"
+"${RV}"-unknown-elf-gcc -g -T baremetal.ld -march=rv32im -mabi=ilp32 -nostdlib -static -o "${RUN_BIN}" lib.o "${TARGET}/src.o"
 
 echo "---------RUNNING---------"
 
