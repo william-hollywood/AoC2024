@@ -47,6 +47,20 @@ stoi:
 	mv a0, t1
 	ret
 
+# itos - turn an integer into a string and store it at the given address
+# a0 - integer
+# a1 - Store string location
 .global itos
 itos:
+	addi sp, sp, -16
+	la t0, sp
+	addi t0, t0, 1
+	li t0, '\0'
+	bnez a0, 1f
+	li t0, '0'
+	j 2f
+1:
+
+2:
+	addi sp, sp, 16
 	ret
