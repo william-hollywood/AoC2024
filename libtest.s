@@ -1,5 +1,7 @@
-.equ PUTS_LOC, 0x87000000
+.equ PUTS_LOC, 0x86000000
 .equ UART_BASE, 0x10000000
+
+.equ STACK_POS, 0x88000000
 
 .section .data
 startstr: .string "-----\nStart.\n-----\n"
@@ -57,7 +59,9 @@ zerostr: .string "0"
 	li t1, \len
 1:
 	beqz t1, 3f
-	beq \rd1, \rd2, 2f
+	lb t2, (\rd1)
+	lb t3, (\rd2)
+	beq t2, t3, 2f
 	addi t0, t0, 1
 2:
 	addi \rd1, \rd1, 1
@@ -70,6 +74,7 @@ zerostr: .string "0"
 
 # Program main
 .section .text
+	li sp, STACK_POS
 # Print start
 	print startstr
 
@@ -115,7 +120,7 @@ zerostr: .string "0"
 	call stoi
 	li t0, 12
 	check_eq a0, t0
-
+#
 # TEST 6 - check_eq_str
 	print test6name
 	la a0, test6data
@@ -133,7 +138,7 @@ zerostr: .string "0"
 # TEST 8 - itos normal number
 	print test8name
 	li a0, 12
-	li a1, 0x8700000
+	li a1, 0x87000000
 	call itos
 	la a0, twelvestr
 	check_eq_mem a0, a1, 3
@@ -142,7 +147,7 @@ zerostr: .string "0"
 # TEST 9 - itos negative number
 	print test9name
 	li a0, -12
-	li a1, 0x8700000
+	li a1, 0x87000000
 	call itos
 	la a0, negtwelvestr
 	check_eq_mem a0, a1, 4
@@ -151,9 +156,10 @@ zerostr: .string "0"
 # TEST 10 - itos zero
 	print test10name
 	li a0, 0
-	li a1, 0x8700000
+	li a1, 0x87000000
 	call itos
 	la a0, zerostr
+	li a1, 0x87000000
 	check_eq_mem a0, a1, 2
 	check_eq a0, zero
 

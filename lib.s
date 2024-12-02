@@ -53,14 +53,23 @@ stoi:
 .global itos
 itos:
 	addi sp, sp, -16
-	la t0, sp
+	mv t0, sp
+	li t1, 0
+	sb t1, (t0)
 	addi t0, t0, 1
-	li t0, '\0'
 	bnez a0, 1f
-	li t0, '0'
+	li t1, '0'
+	sb t1, (t0)
 	j 2f
 1:
-
 2:
+3:
+	blt t0, sp, 4f
+	lb t1, (t0)
+	sb t1, (a1)
+	addi a1, a1, 1
+	addi t0, t0, -1
+	j 3b
+4:
 	addi sp, sp, 16
 	ret

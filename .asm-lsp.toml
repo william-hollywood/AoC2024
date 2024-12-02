@@ -1,0 +1,17 @@
+[default_config]
+version = "0.9.0"
+assembler = "gas"
+instruction_set = "riscv"
+
+[default_config.opts]
+compiler = "riscv64-unknown-elf-as"
+compile_flags_txt = [
+    "-march=rv32im",
+    "-mabi=ilp32",
+    "-g",
+	"-Wall",
+	"-T",
+	"baremetal.ld"
+]
+diagnostics = true
+default_diagnostics = false
