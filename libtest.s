@@ -27,7 +27,7 @@ test8name: .string "itos - normal number: "
 test9name: .string "itos - negative number: "
 test10name: .string "itos - zero: "
 twelvestr: .string "12"
-negtwelvestr: .string "12"
+negtwelvestr: .string "-12"
 zerostr: .string "0"
 
 .macro print s
@@ -120,7 +120,7 @@ zerostr: .string "0"
 	call stoi
 	li t0, 12
 	check_eq a0, t0
-#
+
 # TEST 6 - check_eq_str
 	print test6name
 	la a0, test6data
@@ -141,6 +141,7 @@ zerostr: .string "0"
 	li a1, 0x87000000
 	call itos
 	la a0, twelvestr
+	li a1, 0x87000000
 	check_eq_mem a0, a1, 3
 	check_eq a0, zero
 
@@ -150,6 +151,7 @@ zerostr: .string "0"
 	li a1, 0x87000000
 	call itos
 	la a0, negtwelvestr
+	li a1, 0x87000000
 	check_eq_mem a0, a1, 4
 	check_eq a0, zero
 

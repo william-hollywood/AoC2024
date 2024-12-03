@@ -56,14 +56,28 @@ itos:
 	mv t0, sp
 	li t1, 0
 	sb t1, (t0)
+	bnez a0, 1f # If not zero jump to 1
+	li t1, '0' # is zero, so add a zero
 	addi t0, t0, 1
-	bnez a0, 1f
-	li t1, '0'
 	sb t1, (t0)
-	j 2f
-1:
+	j 3f
+1: # non zero number, check if negative, set t6 if is
+	bgez a0, 2f # If non-negative jump to 2
+	li t6, 1
+	neg a0, a0
 2:
-3:
+	li t5, 10
+	rem t1, a0, t5
+	div a0, a0, t5
+	addi t1, t1, '0'
+	addi t0, t0, 1
+	sb t1, (t0)
+	bnez a0, 2b # If not zero repeat
+	beqz t6, 3f # If t6 zero repeat, dont add '-'
+	li t1, '-' # is zero, so add a zero
+	addi t0, t0, 1
+	sb t1, (t0)
+3: # spit the string made into pointer a1
 	blt t0, sp, 4f
 	lb t1, (t0)
 	sb t1, (a1)

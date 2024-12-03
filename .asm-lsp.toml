@@ -4,7 +4,7 @@ assembler = "gas"
 instruction_set = "riscv"
 
 [default_config.opts]
-compiler = "riscv64-unknown-elf-as"
+compiler = "riscv64-unknown-elf-gcc"
 compile_flags_txt = [
     "-march=rv32im",
     "-mabi=ilp32",
