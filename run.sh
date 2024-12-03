@@ -2,6 +2,7 @@
 
 TARGET=$1
 ACTION=$2
+FILE=$3
 
 # Ubuntu 20.04 binaries from the github only had 32 bit
 if lsb_release -d | grep 20.04;
@@ -21,10 +22,17 @@ RUN_BIN="${TARGET}/${TARGET}.bin"
 
 echo "---------RUNNING---------"
 
-FILE_CONTENT=""
-if [ -f "${TARGET}/input.txt" ];
+if [ "${FILE}" == "" ];
 then
-	FILE_CONTENT=$(cat "${TARGET}/input.txt")
+	FILE="input.txt"
+fi
+
+FILE="${TARGET}/${FILE}"
+
+FILE_CONTENT=""
+if [ -f "${FILE}" ];
+then
+	FILE_CONTENT=$(cat "${FILE}")
 fi
 
 RUNNING_FILE_FILE="./.running"
