@@ -4,13 +4,21 @@
 # a1 - READ location
 .global gets
 gets:
-1: 
+1:
 	lb t0, 0(a1)
 	sb t0, (a0)
-	beq zero, t0, 2f
 	addi a0, a0, 1
-	j 1b
+	beqz t0, 4f
 2:
+	lb t1, 5(a1)
+	andi t1, t1, 1
+	bnez t1, 3f
+	j 2b
+3:
+	j 1b
+4:
+	li t0, 0
+	sb t0, (a0)
 	ret
 
 # puts - Output a string to an address
@@ -20,7 +28,7 @@ gets:
 puts:
 1:
 	lb t0, 0(a0)
-	beq zero, t0, 2f
+	beqz t0, 2f
 	sb t0, (a1)
 	addi a0, a0, 1
 	j 1b

@@ -4,16 +4,22 @@
 .equ STACK_POS, 0x88000000
 
 .section .data
-helloworld: .string "Hello World\n"
+startstr: .string "\n-----\nStart.\n-----\n"
+endstr: .string "\n-----\nFin.\n-----\n"
 
 # Program main
 .section .text
+	la a0, startstr
+	li a1, UART_BASE
+	call puts
 	li sp, STACK_POS
 	li a0, FILE_BUFFER
 	li a1, UART_BASE
 	call gets
-bp:
 	li a0, FILE_BUFFER
+	li a1, UART_BASE
+	call puts
+	la a0, endstr
 	li a1, UART_BASE
 	call puts
 
