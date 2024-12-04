@@ -1,4 +1,66 @@
+.equ STACK_POS, 0x88000000
+.equ UART_BASE, 0x10000000
+
+.section .data
+startstr: .string "-----\nStart.\n-----\n"
+endstr: .string "-----\nFin.\n-----\n"
+
 .section .lib
+
+.global start
+start:
+	li sp, STACK_POS
+	addi sp, sp, -16
+	sw ra, 0(sp)
+	la a0, startstr
+	call print
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+.global end
+end:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+	la a0, endstr
+	call print
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+.global print
+print:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+	li a1, UART_BASE
+	call puts
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+.global check_eq_mem
+check_eq_mem:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+	li t0, 0
+	mv t1, a2
+1:
+	beqz t1, 3f
+	lb t2, (a0)
+	lb t3, (a1)
+	beq t2, t3, 2f
+	addi t0, t0, 1
+2:
+	addi a0, a0, 1
+	addi a1, a1, 1
+	addi t1, t1, -1
+	j 1b
+3:
+	mv a0, t0
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
 # gets - load the file from stdin into ram
 # a0 - file buffer location
 # a1 - READ location
@@ -45,7 +107,7 @@ stoi:
 	addi t0, t0, -'0'
 	li t3, 9
 	bge t0, t3, 2f
-	blt t0, zero, 2f
+	blez t0, 2f
 	li t3, 10
 	mul t1, t1, t3
 	add t1, t0, t1

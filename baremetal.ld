@@ -4,6 +4,8 @@ SECTIONS
 	.text : {
 		*(.text)
 		*(.lib)
+		*(.libday)
+		*(.libtest)
 	}
 	. = ALIGN (CONSTANT (COMMONPAGESIZE));
 	.data : {

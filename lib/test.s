@@ -19,9 +19,9 @@ test4name: .string "stoi - character before '0' terminates: "
 test4data: .string "12/4"
 test5name: .string "stoi - character after '9' terminates: "
 test5data: .string "12:4"
-test6name: .string "check_eq_str - Check eq strs: "
+test6name: .string "test_eq_str - Check eq strs: "
 test6data: .string "string"
-test7name: .string "check_eq_str - Check neq strs: "
+test7name: .string "test_eq_str - Check neq strs: "
 test7data: .string "str!ng"
 test8name: .string "itos - normal number: "
 test9name: .string "itos - negative number: "
@@ -30,56 +30,13 @@ twelvestr: .string "12"
 negtwelvestr: .string "-12"
 zerostr: .string "0"
 
-.macro print s
-	la a0, \s
-	li a1, UART_BASE
-	call puts
-.endm
-
-.macro check_eq rd1, rd2
-	bne \rd1, \rd2, 1f
-	print passedstr
-	j 2f
-1:
-	print failedstr
-2:
-.endm
-
-.macro check_neq rd1, rd2
-	beq \rd1, \rd2, 1f
-	print passedstr
-	j 2f
-1:
-	print failedstr
-2:
-.endm
-
-.macro check_eq_mem rd1, rd2, len
-	li t0, 0
-	li t1, \len
-1:
-	beqz t1, 3f
-	lb t2, (\rd1)
-	lb t3, (\rd2)
-	beq t2, t3, 2f
-	addi t0, t0, 1
-2:
-	addi \rd1, \rd1, 1
-	addi \rd2, \rd2, 1
-	addi t1, t1, -1
-	j 1b
-3:
-	mv a0, t0
-.endm
-
 # Program main
 .section .text
-	li sp, STACK_POS
-# Print start
-	print startstr
+	call start
 
 # TEST 1 - puts, one char
-	print test1name
+	la a0, test1name
+	call print
 	la a0, test1data
 	li a1, PUTS_LOC
 	call puts
@@ -87,10 +44,13 @@ zerostr: .string "0"
 	li t1, PUTS_LOC
 	lb t0, 0(t1)
 	li t1, 'h'
-	check_eq t0, t1
+	mv a0, t0
+	mv a1, t1
+	call test_eq
 
 # TEST 2 - puts two chars, last present
-	print test2name
+	la a0, test2name
+	call print
 	la a0, test2data
 	li a1, PUTS_LOC
 	call puts
@@ -98,75 +58,98 @@ zerostr: .string "0"
 	li t1, PUTS_LOC
 	lb t0, 0(t1)
 	li t1, 'a'
-	check_eq t0, t1
+	mv a0, t0
+	mv a1, t1
+	call test_eq
 
 # TEST 3 - stoi
-	print test3name
+	la a0, test3name
+	call print
 	la a0, test3data
 	call stoi
 	li t0, 1234
-	check_eq a0, t0
+	mv a1, t0
+	call test_eq
 
 # TEST 4 - stoi character before '0'
-	print test4name
+	la a0, test4name
+	call print
 	la a0, test4data
 	call stoi
 	li t0, 12
-	check_eq a0, t0
+	mv a1, t0
+	call test_eq
 
 # TEST 5 - stoi character after '9'
-	print test5name
+	la a0, test5name
+	call print
 	la a0, test5data
 	call stoi
 	li t0, 12
-	check_eq a0, t0
+	mv a1, t0
+	call test_eq
 
-# TEST 6 - check_eq_str
-	print test6name
+# TEST 6 - test_eq_str
+	la a0, test6name
+	call print
 	la a0, test6data
 	la a1, test6data
-	check_eq_mem a0, a1, 5
-	check_eq a0, zero
+	li a2, 5
+	call check_eq_mem
+	mv a1, zero
+	call test_eq
 
-# TEST 7 - check_eq_str
-	print test7name
+# TEST 7 - test_eq_str
+	la a0, test7name
+	call print
 	la a0, test6data
 	la a1, test7data
-	check_eq_mem a0, a1, 5
-	check_neq a0, zero
+	li a2, 5
+	call check_eq_mem
+	mv a1, zero
+	call test_neq
 
 # TEST 8 - itos normal number
-	print test8name
+	la a0, test8name
+	call print
 	li a0, 12
 	li a1, 0x87000000
 	call itos
 	la a0, twelvestr
 	li a1, 0x87000000
-	check_eq_mem a0, a1, 3
-	check_eq a0, zero
+	li a2, 3
+	call check_eq_mem
+	mv a1, zero
+	call test_eq
 
 # TEST 9 - itos negative number
-	print test9name
+	la a0, test9name
+	call print
 	li a0, -12
 	li a1, 0x87000000
 	call itos
 	la a0, negtwelvestr
 	li a1, 0x87000000
-	check_eq_mem a0, a1, 4
-	check_eq a0, zero
+	li a2, 4
+	call check_eq_mem
+	mv a1, zero
+	call test_eq
 
 # TEST 10 - itos zero
-	print test10name
+	la a0, test10name
+	call print
 	li a0, 0
 	li a1, 0x87000000
 	call itos
 	la a0, zerostr
 	li a1, 0x87000000
-	check_eq_mem a0, a1, 2
-	check_eq a0, zero
+	li a2, 2
+	call check_eq_mem
+	mv a1, zero
+	call test_eq
 
 # Print end
-	print endstr
+	call end
 
 # Loop forever after main execution
 loop: j loop
