@@ -7,6 +7,18 @@ endstr: .string "-----\nFin.\n-----\n"
 
 .section .lib
 
+# This is a template
+.global template
+template:
+	li sp, STACK_POS
+	addi sp, sp, -16
+	sw ra, 0(sp)
+	# Function here
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+# start - print out a start message and initialize the stack pointer
 .global start
 start:
 	li sp, STACK_POS
@@ -18,6 +30,7 @@ start:
 	addi sp, sp, 16
 	ret
 
+# end - print out an end message
 .global end
 end:
 	addi sp, sp, -16
@@ -28,6 +41,8 @@ end:
 	addi sp, sp, 16
 	ret
 
+# print - print a message to the UART out
+# a0 - address of string to print
 .global print
 print:
 	addi sp, sp, -16
@@ -38,6 +53,10 @@ print:
 	addi sp, sp, 16
 	ret
 
+# check_eq_mem - Compare two memory region with length a2
+# a0 - mem address 1
+# a1 - mem address 2
+# a2 - length of memory to compare
 .global check_eq_mem
 check_eq_mem:
 	addi sp, sp, -16

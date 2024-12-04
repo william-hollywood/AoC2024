@@ -19,6 +19,8 @@ test4name: .string "stoi - character before '0' terminates: "
 test4data: .string "12/4"
 test5name: .string "stoi - character after '9' terminates: "
 test5data: .string "12:4"
+test55name: .string "stoi - empty str: "
+test55data: .string ":"
 test6name: .string "test_eq_str - Check eq strs: "
 test6data: .string "string"
 test7name: .string "test_eq_str - Check neq strs: "
@@ -86,6 +88,15 @@ zerostr: .string "0"
 	la a0, test5data
 	call stoi
 	li t0, 12
+	mv a1, t0
+	call test_eq
+
+# TEST 5.5 - stoi of nothing
+	la a0, test55name
+	call print
+	la a0, test55data
+	call stoi
+	li t0, 0
 	mv a1, t0
 	call test_eq
 
