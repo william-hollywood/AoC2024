@@ -10,7 +10,6 @@ endstr: .string "-----\nFin.\n-----\n"
 # This is a template
 .global template
 template:
-	li sp, STACK_POS
 	addi sp, sp, -16
 	sw ra, 0(sp)
 	# Function here
