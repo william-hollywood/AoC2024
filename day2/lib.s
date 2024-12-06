@@ -129,12 +129,27 @@ distance_check:
 # a2 - min distance
 # a3 - max distance
 # Returns
-# a0 - !0 is the report is safe
+# a0 - 0 if is the report is safe
 .global is_report_safe
 is_report_safe:
 	addi sp, sp, -16
 	sw ra, 0(sp)
-	# Function here
+
+	sw a0, 4(sp)
+	sw a1, 8(sp)
+	call distance_check
+	bnez a0, 1f
+
+	lw a0, 4(sp)
+	lw a1, 8(sp)
+	call is_only_inc_or_dec
+	bnez a0, 1f
+
+	li a0, 0
+	j 2f
+1:
+	li a0, 1
+2:
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
