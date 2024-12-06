@@ -126,7 +126,7 @@ count_reports1data: .string "1 2 3 4 5\n5 1 4 3 2\n5 4 3 2 1"
 	li a2, 1
 	li a3, 3
 	call distance_check
-	li a1, 1
+	li a1, 0
 	call test_eq
 
 # TEST: distance_check - too close together
@@ -143,8 +143,8 @@ count_reports1data: .string "1 2 3 4 5\n5 1 4 3 2\n5 4 3 2 1"
 	li a2, 1
 	li a3, 3
 	call distance_check
-	li a1, 1
-	call test_eq
+	li a1, 0
+	call test_neq
 
 # TEST: distance_check - too far apart
 	la a0, distance_check2name
@@ -160,8 +160,8 @@ count_reports1data: .string "1 2 3 4 5\n5 1 4 3 2\n5 4 3 2 1"
 	li a2, 1
 	li a3, 3
 	call distance_check
-	li a1, 1
-	call test_eq
+	li a1, 0
+	call test_neq
 
 # TEST: is_report_safe - safe
 	la a0, is_report_safe1name

@@ -93,7 +93,29 @@ is_only_inc_or_dec:
 distance_check:
 	addi sp, sp, -16
 	sw ra, 0(sp)
-	# Function here
+
+	li t5, 0 # how many time the rule was violated
+1:
+	lw t0, 0(a0)
+	lw t1, 4(a0)
+	# check get difference
+	sub t2, t0, t1
+	bgez t2, 2f
+	neg t2, t2
+2: # t2 is abs difference
+	blt t2, a2, 3f
+	bgt t2, a3, 3f
+	j 4f
+3: # if breach rule, inc t5
+	addi t5, t5, 1
+4:
+	# increase compare pos
+	addi a0, a0, 4
+	addi a1, a1, -4
+	li t0, 4
+	bne a1, t0, 1b
+	mv a0, t5
+
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
