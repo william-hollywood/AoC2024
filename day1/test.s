@@ -8,7 +8,13 @@ test2check1: .string "\t[0][0] = 12345: "
 test2check2: .string "\t[0][1] =  9876: "
 test2check3: .string "\t[1][0] = 67890: "
 test2check4: .string "\t[1][1] = 54321: "
+test2check5: .string "\tlen = 8: "
 test2data: .string "12345   67890\n09876   54321\0"
+test3name: .string "sort_list - list gets sorted:\n"
+test3check1: .string "\t[0] =  9876: "
+test3check2: .string "\t[1] = 12345: "
+test3check3: .string "\t[2] = 54321: "
+test3check4: .string "\t[3] = 67890: "
 
 # Program main
 .section .text
@@ -31,6 +37,7 @@ test2data: .string "12345   67890\n09876   54321\0"
 	li a1, LIST1_POS
 	li a2, LIST2_POS
 	call load_dual_list
+	mv t6, a0
 
 	la a0, test2check1
 	call print
@@ -44,7 +51,7 @@ test2data: .string "12345   67890\n09876   54321\0"
 	li a0,  9876
 	lw a1, 4(t1)
 	call test_eq
-bp2:
+
 	la a0, test2check3
 	call print
 	li a0, 67890
@@ -58,6 +65,55 @@ bp2:
 	lw a1, 4(t1)
 	call test_eq
 
+	la a0, test2check5
+	call print
+	mv a0, t6
+	mv a3, a0
+	li a1, 8
+	call test_eq
+
+# TEST 3 - sort_list
+	la a0, test3name
+	call print
+	li t1, LIST1_POS
+	li t0, 54321
+	sw t0, 0(t1)
+	li t0, 12345
+	sw t0, 4(t1)
+	li t0, 67890
+	sw t0, 8(t1)
+	li t0, 9876
+	sw t0, 12(t1)
+
+	li a0, LIST1_POS
+	li a1, 16
+	call sort_list
+
+bp:
+	li t1, LIST1_POS
+	la a0, test3check1
+	call print
+	li a0, 9876
+	lw a1, 0(t1)
+	call test_eq
+
+	la a0, test3check2
+	call print
+	li a0,  12345
+	lw a1, 4(t1)
+	call test_eq
+
+	la a0, test3check3
+	call print
+	li a0, 54321
+	lw a1, 8(t1)
+	call test_eq
+
+	la a0, test3check4
+	call print
+	li a0, 67890
+	lw a1, 12(t1)
+	call test_eq
 # Print end
 	call end
 

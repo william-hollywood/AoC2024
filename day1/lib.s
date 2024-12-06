@@ -17,11 +17,14 @@ seek_num:
 # a0 - buffer location
 # a1 - list1 location
 # a2 - list2 location
+# Return:
+# a0 - list len
 .global load_dual_list
 load_dual_list:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
+	li t6, 0 # len counter
 	sw a0, 4(sp) # buffer loc / cursor
 	sw a1, 8(sp) # list1
 	sw a2, 12(sp) # list2
@@ -32,6 +35,7 @@ load_dual_list:
 	addi a0, a0, 1
 	sw a0, 4(sp)
 2: # load line
+	addi t6, t6, 4
 	call stoi
 	sw a1, 4(sp)
 	lw t0, 8(sp)
@@ -49,6 +53,60 @@ load_dual_list:
 	lb a0, 0(a1) # load char at cursor into a0
 	bnez a0, 1b # if not null terminator, repeat
 2:
+	mv a0, t6
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+# sort_list - sort the list at a0 from smallest to largest (in place)
+# a0 - list location
+# a1 - list len
+.global sort_list
+sort_list:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+
+	mv t6, a0
+	mv t0, t6
+	mv t1, t6
+1:
+	# t0 = current start
+	# t1 = cursor
+	# t2 = cursor num
+	# t3 = smallest num
+	# t4 = smallest addr
+	# t5 = tmp
+	# t6 = initial start
+
+	# Check if next number after cursor is end of list
+	sub t5, t1, t6
+	beq t5, a1, 4f # leave if end of list
+	lw t3, 0(t0)
+	mv t4, t0
+
+	# Find addr of smallest
+2:
+	# if cursor is smaller than current smallest, swap
+	lw t2, 0(t1)
+	bgt t2, t3, 3f
+	mv t3, t2
+	mv t4, t1
+3:
+	addi t1, t1, 4
+	#Check if end of list
+	sub t5, t1, t6
+	bne t5, a1, 2b # repeat if not end
+
+bbp:
+	lw t5, 0(t0)
+	sw t3, 0(t0)
+	sw t5, 0(t4)
+
+	# Inc start, restart cursor, repeat
+	addi t0, t0, 4
+	mv t1, t0
+	j 1b
+4:
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
