@@ -97,7 +97,6 @@ sort_list:
 	sub t5, t1, t6
 	bne t5, a1, 2b # repeat if not end
 
-bbp:
 	lw t5, 0(t0)
 	sw t3, 0(t0)
 	sw t5, 0(t4)
@@ -110,3 +109,42 @@ bbp:
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
+
+# diff_lists - sum the diffs of the lists
+# a0 - List 1
+# a1 - List 2
+# a2 - len
+# Returns
+# a0 - diff sum
+.global diff_lists
+diff_lists:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+
+	# t0 - cur len
+	# t1 - list 1 num
+	# t2 - list 2 num
+	# t3 - cur diff
+	# t6 - diff sum
+	li t0, 0
+	li t6, 0
+1:
+	lw t1, 0(a0)
+	lw t2, 0(a1)
+	sub t3, t1, t2
+	bgez t3, 2f
+	neg t3, t3
+2:
+	add t6, t3, t6
+	addi t0, t0, 4
+	addi a0, a0, 4
+	addi a1, a1, 4
+	sub t5, t0, a2
+	bnez t5, 1b # repeat if not end
+
+	mv a0, t6
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+

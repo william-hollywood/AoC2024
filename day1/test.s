@@ -15,6 +15,7 @@ test3check1: .string "\t[0] =  9876: "
 test3check2: .string "\t[1] = 12345: "
 test3check3: .string "\t[2] = 54321: "
 test3check4: .string "\t[3] = 67890: "
+test4name: .string "diff_lists - return correct diff: "
 
 # Program main
 .section .text
@@ -89,7 +90,6 @@ test3check4: .string "\t[3] = 67890: "
 	li a1, 16
 	call sort_list
 
-bp:
 	li t1, LIST1_POS
 	la a0, test3check1
 	call print
@@ -113,6 +113,28 @@ bp:
 	call print
 	li a0, 67890
 	lw a1, 12(t1)
+	call test_eq
+
+# TEST 4 - diff_lists
+	la a0, test4name
+	call print
+	li t1, LIST1_POS
+	li t0, 4
+	sw t0, 0(t1)
+	li t0, 8
+	sw t0, 4(t1)
+	li t1, LIST2_POS
+	li t0, 10
+	sw t0, 0(t1)
+	li t0, 3
+	sw t0, 4(t1)
+
+	li a0, LIST1_POS
+	li a1, LIST2_POS
+	li a2, 8
+	call diff_lists
+
+	li a1, 11
 	call test_eq
 # Print end
 	call end
