@@ -11,7 +11,9 @@ compile_flags_txt = [
     "-g",
 	"-Wall",
 	"-T",
-	"baremetal.ld"
+	"baremetal.ld",
+	"-nostdlib",
+	"-static",
 ]
 diagnostics = true
 default_diagnostics = false
