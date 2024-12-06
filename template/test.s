@@ -12,7 +12,3 @@ test1data: .string ""
 
 # Print end
 	call end
-
-# Loop forever after main execution
-loop: j loop
-

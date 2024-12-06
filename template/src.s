@@ -15,6 +15,3 @@
 	li a0, FILE_BUFFER
 	call print
 	call end
-
-# Loop forever after main execution
-loop: j loop

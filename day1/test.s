@@ -124,9 +124,9 @@ test4name: .string "diff_lists - return correct diff: "
 	li t0, 8
 	sw t0, 4(t1)
 	li t1, LIST2_POS
-	li t0, 10
-	sw t0, 0(t1)
 	li t0, 3
+	sw t0, 0(t1)
+	li t0, 10
 	sw t0, 4(t1)
 
 	li a0, LIST1_POS
@@ -134,11 +134,7 @@ test4name: .string "diff_lists - return correct diff: "
 	li a2, 8
 	call diff_lists
 
-	li a1, 11
+	li a1, 3
 	call test_eq
 # Print end
 	call end
-
-# Loop forever after main execution
-loop: j loop
-

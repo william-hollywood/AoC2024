@@ -151,6 +151,7 @@ itos:
 	addi sp, sp, -16
 	mv t0, sp
 	li t1, 0
+	li t6, 0
 	sb t1, (t0)
 	bnez a0, 1f # If not zero jump to 1
 	li t1, '0' # is zero, so add a zero

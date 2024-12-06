@@ -176,7 +176,3 @@ zerostr: .string "0"
 
 # Print end
 	call end
-
-# Loop forever after main execution
-loop: j loop
-
