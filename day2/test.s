@@ -218,8 +218,9 @@ count_reports1data: .string "1 2 3 4 5\n5 1 4 3 2\n5 4 3 2 1"
 	la a0, count_reports1name
 	call print
 	la a0, count_reports1data
-	li a1, 1
-	li a2, 3
+	li a1, ARRAY_LOC
+	li a2, 1
+	li a3, 3
 	call count_reports
 	li a1, 2
 	call test_eq

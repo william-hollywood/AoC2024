@@ -7,6 +7,7 @@
 # a1 - output pos
 # Returns
 # a0 - list len
+# a1 - buffer cursor
 .global parse_report
 parse_report:
 	addi sp, sp, -16
@@ -144,7 +145,6 @@ is_report_safe:
 	lw a1, 8(sp)
 	call is_only_inc_or_dec
 	bnez a0, 1f
-
 	li a0, 0
 	j 2f
 1:
@@ -157,15 +157,41 @@ is_report_safe:
 # count_reports
 # count how many reports are safe
 # a0 - buffer pos
-# a1 - min distance
-# a2 - max distance
+# a1 - tmp array pos
+# a2 - min distance
+# a3 - max distance
 # Returns
 # a0 - number of safe reports
 .global count_reports
 count_reports:
 	addi sp, sp, -16
 	sw ra, 0(sp)
-	# Function here
+
+	sw zero, 4(sp)
+	sw a0, 8(sp)
+	sw a1, 12(sp) # array pos
+
+1:
+	lw a0, 8(sp)
+	lw a1, 12(sp)
+	call parse_report
+	sw a1, 8(sp)
+	mv t0, a0
+	lw a0, 12(sp)
+	mv a1, t0
+	call is_report_safe
+
+	bnez a0, 2f
+	lw t0, 4(sp)
+	addi t0, t0, 1
+	sw t0, 4(sp)
+2:
+	lw a0, 8(sp)
+	lb t0, 0(a0)
+	beqz t0, 3f
+	j 1b
+3:
+	lw a0, 4(sp)
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
