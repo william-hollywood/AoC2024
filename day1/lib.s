@@ -1,13 +1,16 @@
-.section .libday
-
-# seek_non_num - seek the cursor a0 forward to the next non number
-# a0 - cursor
-seek_non_num:
-	ret
+.section .lib
 
 # seek_num - seek the cursor a0 forward to the next number
 # a0 - cursor
+.global seek_num
 seek_num:
+1:
+	addi a0, a0, 1
+	lb t0, 0(a0)
+	li t1, '9'
+	bgt t0, t1, 1b
+	li t1, '0'
+	blt t0, t1, 1b
 	ret
 
 # load_dual_list - load two columns from strings into two int list locations
@@ -22,28 +25,29 @@ load_dual_list:
 	sw a0, 4(sp) # buffer loc / cursor
 	sw a1, 8(sp) # list1
 	sw a2, 12(sp) # list2
-
-1: # load line
 	lw a0, 4(sp)
+	j 2f
+1: # skip newline currently under cursor
+	lw a0, 4(sp)
+	addi a0, a0, 1
+	sw a0, 4(sp)
+2: # load line
 	call stoi
+	sw a1, 4(sp)
 	lw t0, 8(sp)
 	sw a0, 0(t0) # store first int at list1 location
 	addi t0, t0, 4
 	sw t0, 8(sp) # increment location by 4
-
 	lw a0, 4(sp)
-	call seek_non_num
 	call seek_num
 	call stoi
+	sw a1, 4(sp)
 	lw t0, 12(sp)
 	sw a0, 0(t0) # store second int at list2 location
 	addi t0, t0, 4
 	sw t0, 12(sp) # increment location by 4
-	call seek_non_num # a0 is at newline or null terminator
-	lw t0, 0(a0) # load char at a0 into t0
-	beqz t0, 2f # if null terminator, leave
-	sw a0, 4(sp) # otherwise store cursor and repeat
-	j 1b
+	lb a0, 0(a1) # load char at cursor into a0
+	bnez a0, 1b # if not null terminator, repeat
 2:
 	lw ra, 0(sp)
 	addi sp, sp, 16

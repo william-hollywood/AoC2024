@@ -13,17 +13,19 @@ test1name: .string "puts - single character placed into a1: "
 test1data: .string "h"
 test2name: .string "puts - two characters placed into a1: "
 test2data: .string "ha"
-test3name: .string "stoi - integer parsed from string: "
-test3data: .string "1234"
+test3name: .string "stoi - integer parsed from string:\n"
+test3data: .string "1094"
+test3check1: .string "\tcheck int is correct: "
+test3check2: .string "\tcheck a1 is cursor pos: "
 test4name: .string "stoi - character before '0' terminates: "
 test4data: .string "12/4"
 test5name: .string "stoi - character after '9' terminates: "
 test5data: .string "12:4"
 test55name: .string "stoi - empty str: "
 test55data: .string ":"
-test6name: .string "test_eq_str - Check eq strs: "
+test6name: .string "test_eq_mem - Check eq mem: "
 test6data: .string "string"
-test7name: .string "test_eq_str - Check neq strs: "
+test7name: .string "test_eq_mem - Check neq mem: "
 test7data: .string "str!ng"
 test8name: .string "itos - normal number: "
 test9name: .string "itos - negative number: "
@@ -69,8 +71,21 @@ zerostr: .string "0"
 	call print
 	la a0, test3data
 	call stoi
-	li t0, 1234
+	mv a3, a0
+	mv a4, a1
+
+	la a0, test3check1
+	call print
+	mv a0, a3
+	li t0, 1094
 	mv a1, t0
+	call test_eq
+
+	la a0, test3check2
+	call print
+	mv a1, a4
+	la a0, test3data
+	addi a0, a0, 4
 	call test_eq
 
 # TEST 4 - stoi character before '0'

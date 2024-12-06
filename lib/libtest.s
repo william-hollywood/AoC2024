@@ -2,7 +2,7 @@
 passedstr: .string "PASSED\n"
 failedstr: .string "FAILED\n"
 
-.section .libtest
+.section .lib
 .global test_eq
 test_eq:
 	addi sp, sp, -16

@@ -1,1 +1,1 @@
-.section .libday
+.section .lib

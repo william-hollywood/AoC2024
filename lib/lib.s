@@ -38,7 +38,14 @@ end:
 	call print
 	lw ra, 0(sp)
 	addi sp, sp, 16
-	ret
+	# fall through
+
+.global shutdown
+shutdown:
+	li t0, 0x100000
+	li t1, 0x5555
+	sw t1, 0(t0)
+	j shutdown
 
 # print - print a message to the UART out
 # a0 - address of string to print
@@ -124,14 +131,15 @@ stoi:
 	lb t0, 0(a0)
 	addi t0, t0, -'0'
 	li t3, 9
-	bge t0, t3, 2f
-	blez t0, 2f
+	bgt t0, t3, 2f
+	bltz t0, 2f
 	li t3, 10
 	mul t1, t1, t3
 	add t1, t0, t1
 	addi a0, a0, 1
 	j 1b
 2:
+	mv a1, a0
 	mv a0, t1
 	ret
 

@@ -12,8 +12,8 @@ printhelp () {
 	printf "script usage: %s [-d] [-t] target\n	-d	debug\n	-t	test\n	-f	input-file\n" "$(basename "$0")" >&2
 }
 
-DEBUG=""
-TEST=""
+TARGET="$1"
+shift
 
 while getopts 'dtf:' OPTION; do
 	case "$OPTION" in
@@ -34,7 +34,6 @@ while getopts 'dtf:' OPTION; do
 done
 shift "$((OPTIND -1))"
 
-TARGET="$1"
 
 if [ "$TARGET" = "" ];
 then
