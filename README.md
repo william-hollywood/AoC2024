@@ -14,7 +14,10 @@ Used this [handy video](https://www.youtube.com/watch?v=qLzD33xVcRE) as a starti
 ### Building/running/debugging a project
 ```bash
 # To build and run the project
-./run.sh <project-name> <"debug">(optional)
+./run.sh <project-name> <-t> <-d> <-f filename>
+# -t, for running tests, not main file
+# -d, for debug
+# -f filename, for specifying file to input via stdin
 
 # If run with "debug", in another terminal
 ./gdb.sh
