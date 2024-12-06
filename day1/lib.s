@@ -1,18 +1,5 @@
 .section .lib
 
-# seek_num - seek the cursor a0 forward to the next number
-# a0 - cursor
-.global seek_num
-seek_num:
-1:
-	addi a0, a0, 1
-	lb t0, 0(a0)
-	li t1, '9'
-	bgt t0, t1, 1b
-	li t1, '0'
-	blt t0, t1, 1b
-	ret
-
 # load_dual_list - load two columns from strings into two int list locations
 # a0 - buffer location
 # a1 - list1 location

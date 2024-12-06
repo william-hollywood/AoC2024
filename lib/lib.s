@@ -122,6 +122,19 @@ puts:
 2:
 	ret
 
+# seek_num - seek the cursor a0 forward to the next number
+# a0 - cursor
+.global seek_num
+seek_num:
+1:
+	addi a0, a0, 1
+	lb t0, 0(a0)
+	li t1, '9'
+	bgt t0, t1, 1b
+	li t1, '0'
+	blt t0, t1, 1b
+	ret
+
 # stoi - parse a string as an int, read until first non-int character
 # a0 - string address
 .global stoi

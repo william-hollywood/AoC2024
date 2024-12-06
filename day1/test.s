@@ -1,82 +1,70 @@
 .section .data
-test1name: .string "seek_num - seek from non-number to number: "
-test1data: .string "---123"
 .equ LIST1_POS, 0x84000000
 .equ LIST2_POS, 0x84001000
-test2name: .string "load_dual_list - loads numbers into lists:\n"
-test2check1: .string "\t[0][0] = 12345: "
-test2check2: .string "\t[0][1] =  9876: "
-test2check3: .string "\t[1][0] = 67890: "
-test2check4: .string "\t[1][1] = 54321: "
-test2check5: .string "\tlen = 8: "
-test2data: .string "12345   67890\n09876   54321\0"
-test3name: .string "sort_list - list gets sorted:\n"
-test3check1: .string "\t[0] =  9876: "
-test3check2: .string "\t[1] = 12345: "
-test3check3: .string "\t[2] = 54321: "
-test3check4: .string "\t[3] = 67890: "
-test4name: .string "diff_lists - return correct diff: "
-test5name: .string "num_occurances - return correct number: "
-test6name: .string "similarity_score - return correct score: "
+load_dual_list1name: .string "load_dual_list - loads numbers into lists:\n"
+load_dual_list1check1: .string "\t[0][0] = 12345: "
+load_dual_list1check2: .string "\t[0][1] =  9876: "
+load_dual_list1check3: .string "\t[1][0] = 67890: "
+load_dual_list1check4: .string "\t[1][1] = 54321: "
+load_dual_list1check5: .string "\tlen = 8: "
+load_dual_list1data: .string "12345   67890\n09876   54321\0"
+sort_list1name: .string "sort_list - list gets sorted:\n"
+sort_list1check1: .string "\t[0] =  9876: "
+sort_list1check2: .string "\t[1] = 12345: "
+sort_list1check3: .string "\t[2] = 54321: "
+sort_list1check4: .string "\t[3] = 67890: "
+diff_lists1name: .string "diff_lists - return correct diff: "
+num_occurances1name: .string "num_occurances - return correct number: "
+similarity_score1name: .string "similarity_score - return correct score: "
 
 # Program main
 .section .text
 	call start
 
-# TEST 1 - seek_num, seeks num
-	la a0, test1name
+# TEST: load_dual_list, loads 2x2 of numbers
+	la a0, load_dual_list1name
 	call print
-	la a0, test1data
-	call seek_num
-
-	la a1, test1data
-	addi a1, a1, 3 # str + 3 = '1'
-	call test_eq
-
-# TEST 2 - load_dual_list, loads 2x2 of numbers
-	la a0, test2name
-	call print
-	la a0, test2data
+	la a0, load_dual_list1data
 	li a1, LIST1_POS
 	li a2, LIST2_POS
 	call load_dual_list
 	mv t6, a0
 
-	la a0, test2check1
+	la a0, load_dual_list1check1
 	call print
 	li a0, 12345
 	li t1, LIST1_POS
 	lw a1, 0(t1)
 	call test_eq
 
-	la a0, test2check2
+	la a0, load_dual_list1check2
 	call print
 	li a0,  9876
 	lw a1, 4(t1)
 	call test_eq
 
-	la a0, test2check3
+	la a0, load_dual_list1check3
 	call print
 	li a0, 67890
 	li t1, LIST2_POS
 	lw a1, 0(t1)
 	call test_eq
 
-	la a0, test2check4
+	la a0, load_dual_list1check4
 	call print
 	li a0, 54321
 	lw a1, 4(t1)
 	call test_eq
 
-	la a0, test2check5
+	la a0, load_dual_list1check5
 	call print
 	mv a0, t6
 	mv a3, a0
 	li a1, 8
 	call test_eq
 
-# TEST 3 - sort_list
-	la a0, test3name
+# TEST: sort_list
+	la a0, sort_list1name
 	call print
 	li t1, LIST1_POS
 	li t0, 54321
@@ -93,32 +81,32 @@ test6name: .string "similarity_score - return correct score: "
 	call sort_list
 
 	li t1, LIST1_POS
-	la a0, test3check1
+	la a0, sort_list1check1
 	call print
 	li a0, 9876
 	lw a1, 0(t1)
 	call test_eq
 
-	la a0, test3check2
+	la a0, sort_list1check2
 	call print
 	li a0,  12345
 	lw a1, 4(t1)
 	call test_eq
 
-	la a0, test3check3
+	la a0, sort_list1check3
 	call print
 	li a0, 54321
 	lw a1, 8(t1)
 	call test_eq
 
-	la a0, test3check4
+	la a0, sort_list1check4
 	call print
 	li a0, 67890
 	lw a1, 12(t1)
 	call test_eq
 
-# TEST 4 - diff_lists
-	la a0, test4name
+# TEST: diff_lists
+	la a0, diff_lists1name
 	call print
 	li t1, LIST1_POS
 	li t0, 4
@@ -139,8 +127,8 @@ test6name: .string "similarity_score - return correct score: "
 	li a1, 3
 	call test_eq
 
-# TEST 5 - num_occurances
-	la a0, test5name
+# TEST: num_occurances
+	la a0, num_occurances1name
 	call print
 
 	li t1, LIST1_POS
@@ -161,8 +149,8 @@ test6name: .string "similarity_score - return correct score: "
 	li a1, 2
 	call test_eq
 
-# TEST 6 - similarity_score
-	la a0, test6name
+# TEST: similarity_score
+	la a0, similarity_score1name
 	call print
 
 	li t1, LIST2_POS
