@@ -78,8 +78,8 @@ count_reports1data: .string "1 2 3 4 5\n5 1 4 3 2\n5 4 3 2 1"
 	li t0, 9
 	sw t0, 8(a0)
 	li a1, 12
-	call distance_check
-	li a1, 1
+	call is_only_inc_or_dec
+	li a1, 0
 	call test_eq
 
 # TEST: is_only_inc_or_dec - all dec
@@ -93,8 +93,8 @@ count_reports1data: .string "1 2 3 4 5\n5 1 4 3 2\n5 4 3 2 1"
 	li t0, 7
 	sw t0, 8(a0)
 	li a1, 12
-	call distance_check
-	li a1, 1
+	call is_only_inc_or_dec
+	li a1, 0
 	call test_eq
 
 # TEST: is_only_inc_or_dec - not all same
@@ -108,9 +108,9 @@ count_reports1data: .string "1 2 3 4 5\n5 1 4 3 2\n5 4 3 2 1"
 	li t0, 7
 	sw t0, 8(a0)
 	li a1, 12
-	call distance_check
-	li a1, 1
-	call test_eq
+	call is_only_inc_or_dec
+	li a1, 0
+	call test_neq
 
 # TEST: distance_check - all close enough
 	la a0, distance_check1name
