@@ -43,11 +43,13 @@ fi
 
 if [ "$FILE" != "" ];
 then
-	FILE="${TARGET}/${FILE}"
 	FILE_CONTENT=""
 	if [ -f "${FILE}" ];
 	then
 		FILE_CONTENT=$(cat "${FILE}")
+	else
+		echo "File specified does not exist, exiting"
+		exit 1
 	fi
 fi
 
