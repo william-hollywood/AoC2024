@@ -31,7 +31,7 @@ count_reports1data: .string "1 2 3 4 5\n5 1 4 3 2\n5 4 3 2 1"
 	la a0, parse_report1data
 	li a1, ARRAY_LOC
 	call parse_report
-	sw a1, 0(sp)
+	sw a0, 0(sp)
 
 	la a0, parse_report1check1
 	call print

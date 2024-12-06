@@ -126,8 +126,10 @@ puts:
 # a0 - cursor
 .global seek_num
 seek_num:
+	j 2f
 1:
 	addi a0, a0, 1
+2:
 	lb t0, 0(a0)
 	li t1, '9'
 	bgt t0, t1, 1b
@@ -137,6 +139,9 @@ seek_num:
 
 # stoi - parse a string as an int, read until first non-int character
 # a0 - string address
+# returns
+# a0 - int
+# a1 - cursor pos
 .global stoi
 stoi:
 	li t1, 0

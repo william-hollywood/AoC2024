@@ -11,7 +11,31 @@
 parse_report:
 	addi sp, sp, -16
 	sw ra, 0(sp)
-	# Function here
+
+	sw a0, 4(sp) # initial buffer pos
+	sw a1, 8(sp) # ouput pos
+	sw zero, 12(sp) # cur len counter
+	j 2f
+1:
+	mv a0, a1
+2:
+	call seek_num
+	call stoi
+	lw t0, 8(sp)
+	sw a0, 0(t0) # store parsed at output pos
+	addi t0, t0, 4
+	sw t0, 8(sp) # increment output pos
+	lw t0, 12(sp)
+	addi t0, t0, 4
+	sw t0, 12(sp) # increment cur len
+	lb t0, 0(a1) # load char at cursor
+	li t1, '\n'
+	beq t0, t1, 3f # repeat if not newline or null
+	li t1, 0
+	beq t0, t1, 3f
+	j 1b
+3:
+	lw a0, 12(sp) # load len from stack
 
 	lw ra, 0(sp)
 	addi sp, sp, 16

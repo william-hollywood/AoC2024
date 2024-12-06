@@ -15,7 +15,6 @@ load_dual_list:
 	sw a0, 4(sp) # buffer loc / cursor
 	sw a1, 8(sp) # list1
 	sw a2, 12(sp) # list2
-	lw a0, 4(sp)
 	j 2f
 1: # skip newline currently under cursor
 	lw a0, 4(sp)
