@@ -147,4 +147,80 @@ diff_lists:
 	addi sp, sp, 16
 	ret
 
+# num_occurances - count the number of occurances of a number in a given list
+# a0 - list
+# a1 - len
+# a2 - number
+# returns
+# a0 - count
+.global num_occurances
+num_occurances:
+	addi sp, sp, -16
+	sw ra, 0(sp)
 
+	# t1 - cur len
+	# t5 - count
+	li t1, 0
+	li t5, 0
+1:
+	lw t2, 0(a0)
+	# increment len, cursor
+	addi t1, t1, 4
+	addi a0, a0, 4
+	bne a2, t2, 2f
+	addi t5, t5, 1
+2:
+	sub t2, t1, a1
+	bnez t2, 1b # repeat if not end
+
+	mv a0, t5
+
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+# similarity_score - sum each num in left list times occurance in right
+# a0 - list 1
+# a1 - list 2
+# a2 - len
+# returns
+# a0 - similarity score
+.global similarity_score
+similarity_score:
+	addi sp, sp, -32
+	sw ra, 0(sp)
+	sw a0, 4(sp) # list 1 original
+	sw a0, 8(sp) # list 1 cursor
+	sw a1, 12(sp) # list 2
+	sw a2, 16(sp) # len
+
+	# t0 - cur len
+	# t6 - similarity sum
+	li t0, 0
+	li t6, 0
+1:
+	lw a0, 12(sp) # load list2
+	lw a1, 16(sp) # load len
+	lw t5, 8(sp)
+	lw t5, 0(t5)
+	mv a2, t5 # load search num
+	call num_occurances
+
+	# add to sum
+	mul t5, a0, a2
+	add t6, t5, t6
+
+	# increment len, cursor
+	addi t0, t0, 4
+	lw t1, 8(sp)
+	addi t1, t1, 4
+	# store cursor
+	sw t1, 8(sp)
+	lw t1, 16(sp)
+	sub t1, t1, t0
+	bnez t1, 1b # repeat if not end
+
+	mv a0, t6
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret

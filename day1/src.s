@@ -81,5 +81,19 @@ part2text: .string "Part 2: calulate similarity score\nAnswer: "
 	la a0, part2text
 	call print
 
+	li a0, LIST1_POS
+	li a1, LIST2_POS
+	lw a2, 0(sp)
+	call similarity_score
+
+	la a1, RESULT_LOC
+	call itos
+
+	la a0, RESULT_LOC
+	call print
+
+	la a0, newline
+	call print
+
 	addi sp, sp, 16
 	call end

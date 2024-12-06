@@ -16,6 +16,8 @@ test3check2: .string "\t[1] = 12345: "
 test3check3: .string "\t[2] = 54321: "
 test3check4: .string "\t[3] = 67890: "
 test4name: .string "diff_lists - return correct diff: "
+test5name: .string "num_occurances - return correct number: "
+test6name: .string "similarity_score - return correct score: "
 
 # Program main
 .section .text
@@ -135,6 +137,50 @@ test4name: .string "diff_lists - return correct diff: "
 	call diff_lists
 
 	li a1, 3
+	call test_eq
+
+# TEST 5 - num_occurances
+	la a0, test5name
+	call print
+
+	li t1, LIST1_POS
+	li t0, 4
+	sw t0, 0(t1)
+	li t0, 10
+	sw t0, 4(t1)
+	li t0, 4
+	sw t0, 8(t1)
+	li t0, 2
+	sw t0, 12(t1)
+
+	li a0, LIST1_POS
+	li a1, 16
+	li a2, 4
+	call num_occurances
+
+	li a1, 2
+	call test_eq
+
+# TEST 6 - similarity_score
+	la a0, test6name
+	call print
+
+	li t1, LIST2_POS
+	li t0, 10
+	sw t0, 0(t1)
+	li t0, 3
+	sw t0, 4(t1)
+	li t0, 4
+	sw t0, 8(t1)
+	li t0, 4
+	sw t0, 12(t1)
+
+	li a0, LIST1_POS
+	li a1, LIST2_POS
+	li a2, 16
+	call similarity_score
+
+	li a1, 26
 	call test_eq
 # Print end
 	call end
