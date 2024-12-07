@@ -296,9 +296,6 @@ count_dampened_reports:
 	lw t0, 4(sp)
 	addi t0, t0, 1
 	sw t0, 4(sp)
-
-	li a0, 0x83000000
-	call print
 4:
 	# check if end of buffer
 	# repeat if not end
