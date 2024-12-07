@@ -103,7 +103,6 @@ process_memory_string1data: .string "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(3
 read_until_valid_mul_helper:
 	addi sp, sp, -48
 	sw ra, 0(sp)
-bp3:
 	sw a1, 4(sp)
 	sw a2, 8(sp)
 	sw a3, 12(sp)

@@ -26,7 +26,7 @@ read_until_valid_mul:
 	addi a0, a0, 4
 
 	# check for number of 1-3 digits, if not, jump to increase
-	mv t5, a0 # store start for if 
+	mv t5, a0 # used if we need to stoi
 
 	lb t0, 0(a0)
 	li t1, '9'
@@ -128,7 +128,18 @@ process_memory_string:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
-	# TODO
+	sw zero, 4(sp)
+1:
+	call read_until_valid_mul
+	lb t0, 0(a0)
+	beqz t0, 2f
+	mul t0, a1, a2
+	lw t1, 4(sp)
+	add t1, t0, t1
+	sw t1, 4(sp)
+	j 1b
+2:
+	lw a0, 4(sp)
 
 	lw ra, 0(sp)
 	addi sp, sp, 16
