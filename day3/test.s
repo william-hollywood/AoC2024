@@ -32,6 +32,8 @@ read_until_valid_mul4check3: .string "\ta2 = 0: "
 process_memory_string1name: .string "process_memory_string - read all valid: "
 process_memory_string1data: .string "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"
 
+process_memory_string2name: .string "process_memory_string - read all valid (with do/don't toggle): "
+
 # Program main
 .section .text
 	call start
@@ -82,9 +84,20 @@ process_memory_string1data: .string "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(3
 	call print
 
 	la a0, process_memory_string1data
+	la a1, 0 # don't handle do/don'ts
 	call process_memory_string
 
 	li a1, 161
+	call test_eq
+
+	la a0, process_memory_string2name
+	call print
+
+	la a0, process_memory_string1data
+	la a1, 1 # do handle do/don'ts
+	call process_memory_string
+
+	li a1, 48
 	call test_eq
 
 	addi sp, sp, 16

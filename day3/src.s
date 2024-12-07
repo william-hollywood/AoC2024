@@ -7,7 +7,8 @@
 newline: .string "\n"
 ok: .string "OK\n"
 phase1text: .string "Phase 1: Load file from stdin: "
-part1text: .string "Part 1: evaluate all valud mul in string\nAnswer: "
+part1text: .string "Part 1: evaluate all valid mul in string\nAnswer: "
+part2text: .string "Part 2: evaluate all valid mul in string with do/dont\nAnswer: "
 
 # Program main
 .section .text
@@ -27,6 +28,7 @@ part1text: .string "Part 1: evaluate all valud mul in string\nAnswer: "
 	call print
 
 	li a0, FILE_BUFFER
+	li a1, 0
 	call process_memory_string
 
 	la a1, RESULT_LOC
@@ -38,4 +40,19 @@ part1text: .string "Part 1: evaluate all valud mul in string\nAnswer: "
 	la a0, newline
 	call print
 
+	la a0, part2text
+	call print
+
+	li a0, FILE_BUFFER
+	li a1, 1
+	call process_memory_string
+
+	la a1, RESULT_LOC
+	call itos
+
+	la a0, RESULT_LOC
+	call print
+
+	la a0, newline
+	call print
 	call end

@@ -123,11 +123,13 @@ read_until_valid_mul:
 # a0 - cursor to start from
 # Returns
 # a0 - sum of valid mul operations
+# a1 - !0 if the processing should take into account do/don'ts
 .global process_memory_string
 process_memory_string:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
+	mv a1, s0 # Using this as a global thing
 	sw zero, 4(sp)
 1:
 	call read_until_valid_mul
