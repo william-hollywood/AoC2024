@@ -69,18 +69,18 @@ check_eq_mem:
 	sw ra, 0(sp)
 	li t0, 0
 	mv t1, a2
-1:
-	beqz t1, 3f
+.L_check_eq_mem_compare_byte:
+	beqz t1, .L_check_eq_mem_exit
 	lb t2, (a0)
 	lb t3, (a1)
-	beq t2, t3, 2f
+	beq t2, t3, .L_check_eq_mem_inc
 	addi t0, t0, 1
-2:
+.L_check_eq_mem_inc:
 	addi a0, a0, 1
 	addi a1, a1, 1
 	addi t1, t1, -1
-	j 1b
-3:
+	j .L_check_eq_mem_compare_byte
+.L_check_eq_mem_exit:
 	mv a0, t0
 	lw ra, 0(sp)
 	addi sp, sp, 16
@@ -91,19 +91,16 @@ check_eq_mem:
 # a1 - READ location
 .global gets
 gets:
-1:
 	lb t0, 0(a1)
 	sb t0, (a0)
 	addi a0, a0, 1
-	beqz t0, 4f
-2:
+	beqz t0, gets
+.L_gets_check_LCR:
 	lb t1, 5(a1)
 	andi t1, t1, 1
-	bnez t1, 3f
-	j 2b
-3:
-	j 1b
-4:
+	bnez t1, gets
+	j .L_gets_check_LCR
+.L_gets_exit:
 	li t0, 0
 	sb t0, (a0)
 	ret
@@ -113,28 +110,27 @@ gets:
 # a1 - WRITE location
 .global puts
 puts:
-1:
 	lb t0, 0(a0)
-	beqz t0, 2f
+	beqz t0, .L_puts_exit
 	sb t0, (a1)
 	addi a0, a0, 1
-	j 1b
-2:
+	j puts
+.L_puts_exit:
 	ret
 
 # seek_num - seek the cursor a0 forward to the next number
 # a0 - cursor
 .global seek_num
 seek_num:
-	j 2f
-1:
+	j .L_seek_num_check_cursor
+.L_seek_num_inc:
 	addi a0, a0, 1
-2:
+.L_seek_num_check_cursor:
 	lb t0, 0(a0)
 	li t1, '9'
-	bgt t0, t1, 1b
+	bgt t0, t1, .L_seek_num_inc
 	li t1, '0'
-	blt t0, t1, 1b
+	blt t0, t1, .L_seek_num_inc
 	ret
 
 # stoi - parse a string as an int, read until first non-int character
@@ -145,18 +141,18 @@ seek_num:
 .global stoi
 stoi:
 	li t1, 0
-1:
+.L_stoi_convert_current_char:
 	lb t0, 0(a0)
 	addi t0, t0, -'0'
 	li t3, 9
-	bgt t0, t3, 2f
-	bltz t0, 2f
+	bgt t0, t3, .L_stoi_exit
+	bltz t0, .L_stoi_exit
 	li t3, 10
 	mul t1, t1, t3
 	add t1, t0, t1
 	addi a0, a0, 1
-	j 1b
-2:
+	j .L_stoi_convert_current_char
+.L_stoi_exit:
 	mv a1, a0
 	mv a0, t1
 	ret
@@ -169,36 +165,36 @@ itos:
 	addi sp, sp, -16
 	mv t0, sp
 	li t1, 0
-	li t6, 0
+	li t6, 0 # is zero flag
 	sb t1, (t0)
-	bnez a0, 1f # If not zero jump to 1
+	bnez a0, .L_itos_check_negative
 	li t1, '0' # is zero, so add a zero
 	addi t0, t0, 1
 	sb t1, (t0)
-	j 3f
-1: # non zero number, check if negative, set t6 if is
-	bgez a0, 2f # If non-negative jump to 2
+	j .L_itos_output_str
+.L_itos_check_negative: # non zero number, check if negative, set t6 if is
+	bgez a0, .L_itos_parse_char # If non-negative jump to 2
 	li t6, 1
 	neg a0, a0
-2:
+.L_itos_parse_char:
 	li t5, 10
 	rem t1, a0, t5
 	div a0, a0, t5
 	addi t1, t1, '0'
 	addi t0, t0, 1
 	sb t1, (t0)
-	bnez a0, 2b # If not zero repeat
-	beqz t6, 3f # If t6 zero repeat, dont add '-'
+	bnez a0, .L_itos_parse_char # If not zero repeat
+	beqz t6, .L_itos_output_str # If t6 zero repeat, dont add '-'
 	li t1, '-' # is zero, so add a zero
 	addi t0, t0, 1
 	sb t1, (t0)
-3: # spit the string made into pointer a1
-	blt t0, sp, 4f
+.L_itos_output_str: # spit the string made into pointer a1
+	blt t0, sp, .L_itos_exit
 	lb t1, (t0)
 	sb t1, (a1)
 	addi a1, a1, 1
 	addi t0, t0, -1
-	j 3b
-4:
+	j .L_itos_output_str
+.L_itos_exit:
 	addi sp, sp, 16
 	ret
