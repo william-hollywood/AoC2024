@@ -195,3 +195,72 @@ count_reports:
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
+
+# dampen_arr
+# a0 - ARR pos
+# a1 - ARR len
+# a2 - dst arr_pos
+# a3 - item to remove
+.global dampen_arr
+dampen_arr:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+
+	# t0 - cursor in arr
+	# t1 - cursor in dst
+	# t2 - count
+	# t3 - num from arr
+
+	mv t0, a0
+	mv t1, a2
+	li t2, 0
+1:
+	beq a3, t2, 2f # if offset is item to remove, dont store it, increment cursor only
+	lw t3, 0(t0)
+	sw t3, 0(t1)
+	addi t1, t1, 4
+2:
+	addi t0, t0, 4
+	addi t2, t2, 4
+	bne t2, a1, 1b
+
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+# count_dampened_reports
+# count how many reports are safe if one of the values is removed
+# a0 - buffer pos
+# a1 - tmp array pos
+# a2 - min distance
+# a3 - max distance
+# a4 - tmp tmp array pos
+# Returns
+# a0 - number of safe reports after dampening
+.global count_dampened_reports
+count_dampened_reports:
+	addi sp, sp, -32
+	sw ra, 0(sp)
+
+	sw zero, 4(sp)
+	sw a0, 8(sp) # buffer pos
+	sw a1, 12(sp) # array pos
+	sw a2, 16(sp) # min diff
+	sw a3, 20(sp) # max diff
+
+	# get report from buffer
+
+	# check if safe, if safe jump down to increase
+	# run dampen_arr for i <= len_report
+	# for each check if safe, if safe jump to increase, else repeat
+
+	# if here, not safe, jump to check for end of buffer
+
+	# increase, increase count 4(sp)
+
+	# check if end of buffer
+	# repeat if not end
+
+	lw ra, 0(sp)
+	addi sp, sp, 32
+	ret

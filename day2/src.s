@@ -1,6 +1,7 @@
 .equ UART_BASE, 0x10000000
 .equ FILE_BUFFER, 0x84000000
 .equ ARR_POS, 0x87000000
+.equ TMP_ARR_POS, 0x87001000
 .equ RESULT_LOC, 0x85000000
 
 .section .data
@@ -8,6 +9,7 @@ newline: .string "\n"
 ok: .string "OK\n"
 phase1text: .string "Phase 1: Load file from stdin: "
 part1text: .string "Part 1: count number of valid reports\nAnswer: "
+part2text: .string "Part 2: count number of valid dampened reports\nAnswer: "
 
 # Program main
 .section .text
@@ -42,4 +44,22 @@ part1text: .string "Part 1: count number of valid reports\nAnswer: "
 	la a0, newline
 	call print
 
+	la a0, part2text
+	call print
+
+	li a0, FILE_BUFFER
+	li a1, ARR_POS
+	li a2, 1
+	li a3, 3
+	li a4, TMP_ARR_POS
+	call count_dampened_reports
+
+	la a1, RESULT_LOC
+	call itos
+
+	la a0, RESULT_LOC
+	call print
+
+	la a0, newline
+	call print
 	call end
