@@ -23,7 +23,7 @@ read_until_valid_mul3check2: .string "\ta1 = 0: "
 read_until_valid_mul3check3: .string "\ta2 = 0: "
 read_until_valid_mul4name: .string "read_until_valid_mul - only one number in mul:\n"
 read_until_valid_mul4data: .string "mul(123)abc"
-.equ read_until_valid_mul4check1data, 12
+.equ read_until_valid_mul4check1data, 11
 read_until_valid_mul4check1: .string "\ta0 = end of string: "
 .equ read_until_valid_mul4check2data, 0
 read_until_valid_mul4check2: .string "\ta1 = 0: "
@@ -101,39 +101,47 @@ process_memory_string1data: .string "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(3
 # a7 - check 3 value
 .global read_until_valid_mul_helper
 read_until_valid_mul_helper:
-	addi sp, sp, -16
+	addi sp, sp, -48
 	sw ra, 0(sp)
-
-	sw a2, 4(sp) # store a2
+bp3:
+	sw a1, 4(sp)
+	sw a2, 8(sp)
+	sw a3, 12(sp)
+	sw a4, 16(sp)
+	sw a5, 24(sp)
+	sw a6, 28(sp)
+	sw a7, 32(sp)
 
 	call print
-	mv a0, a1
+	lw a0, 4(sp)
 	call read_until_valid_mul
+	sw a0, 36(sp)
+	sw a1, 40(sp)
+	sw a2, 44(sp)
 
-	sw a1, 8(sp)
-	sw a2, 12(sp)
-
-	# check a0 + a2 = a3
-	lw a0, 4(sp) # load a2
+	# check a1 + a3 = a0 returned
+	lw a0, 8(sp) # load a2
 	call print
-	mv a0, a3
-	add a0, a0, a1
+	lw a0, 36(sp) # a0 returned from func
+	lw a1, 4(sp) # test data address passed in
+	lw t3, 12(sp)
+	add a1, a1, t3
 	call test_eq
 
 	# check a1 = a5
 	mv a0, a4
 	call print
-	lw a0, 8(sp)
-	mv a1, a4
+	lw a0, 40(sp)
+	lw a1, 24(sp)
 	call test_eq
 
 	# check a2 = a7
 	mv a0, a6
 	call print
-	lw a0, 12(sp)
-	mv a1, a7
+	lw a0, 44(sp)
+	lw a1, 32(sp)
 	call test_eq
 
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 48
 	ret
