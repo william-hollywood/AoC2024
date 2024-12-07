@@ -242,24 +242,71 @@ count_dampened_reports:
 	addi sp, sp, -32
 	sw ra, 0(sp)
 
-	sw zero, 4(sp)
+	sw zero, 4(sp) # count
 	sw a0, 8(sp) # buffer pos
 	sw a1, 12(sp) # array pos
 	sw a2, 16(sp) # min diff
 	sw a3, 20(sp) # max diff
 
 	# get report from buffer
-
+1:
+	lw a0, 8(sp)
+	lw a1, 12(sp)
+	call parse_report
+	sw a1, 8(sp)
+	mv t0, a0
+	lw a0, 12(sp)
+	mv a1, t0
+	sw a1, 28(sp) # len of arr
+	lw a2, 16(sp) # min diff
+	lw a3, 20(sp) # max diff
+	call is_report_safe
 	# check if safe, if safe jump down to increase
+	beqz a0, 3f
 	# run dampen_arr for i <= len_report
 	# for each check if safe, if safe jump to increase, else repeat
+	sw zero, 24(sp) # which item to remove
+2:
+	lw a0, 12(sp)
+	lw a1, 28(sp)
+	mv a2, a4
+	lw a3, 24(sp)
+	call dampen_arr
+
+	mv a0, a4
+	lw a1, 28(sp)
+	addi a1, a1, -4
+	lw a2, 16(sp) # min diff
+	lw a3, 20(sp) # max diff
+	call is_report_safe
+	beqz a0, 3f
+
+	# increment item to remove
+	lw t0, 24(sp)
+	addi t0, t0, 4
+	sw t0, 24(sp)
+	lw t1, 28(sp)
+	addi t1, t1, 4
+	bne t0, t1, 2b # jump back if not at end
 
 	# if here, not safe, jump to check for end of buffer
+	j 4f
 
-	# increase, increase count 4(sp)
+3: # add 1 to safe reports
+	lw t0, 4(sp)
+	addi t0, t0, 1
+	sw t0, 4(sp)
 
+	li a0, 0x83000000
+	call print
+4:
 	# check if end of buffer
 	# repeat if not end
+	lw a0, 8(sp)
+	lb t0, 0(a0)
+	bnez t0, 1b
+
+	lw a0, 4(sp) # count
 
 	lw ra, 0(sp)
 	addi sp, sp, 32
