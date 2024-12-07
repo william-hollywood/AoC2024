@@ -1,5 +1,7 @@
 .section .data
 mul_str: .string "mul("
+do_str: .string "do()"
+dont_str: .string "don't()"
 
 .section .lib
 
@@ -22,9 +24,30 @@ read_until_valid_mul:
 	call check_eq_mem
 	mv t0, a0
 	mv a0, a3
-	bnez t0, 2f
+	bnez t0, .L_check_toggle
 	addi a0, a0, 4
-
+	j .L_after_toggle
+.L_check_toggle: # These are neat, wish i knew about them sooner
+	beqz s0, 2f
+	# memory doesn't match, check if it's a do/don't
+	mv a3, a0
+	la a1, do_str
+	la a2, 4
+	call check_eq_mem
+	bnez a0, .L_check_dont
+	li s1, 0
+	j .L_toggled
+.L_check_dont:
+	mv a0, a3
+	la a1, dont_str
+	la a2, 7
+	call check_eq_mem
+	bnez a0, .L_toggled
+	li s1, 1
+.L_toggled:
+	mv a0, a3
+	j 2f
+.L_after_toggle:
 	# check for number of 1-3 digits, if not, jump to increase
 	mv t5, a0 # used if we need to stoi
 
@@ -129,7 +152,7 @@ process_memory_string:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
-	mv a1, s0 # Using this as a global thing
+	mv s0, a1 # Using this as a global thing
 	sw zero, 4(sp)
 1:
 	call read_until_valid_mul
@@ -137,7 +160,11 @@ process_memory_string:
 	beqz t0, 2f
 	mul t0, a1, a2
 	lw t1, 4(sp)
+	beqz s0, 4f
+	bnez s1, 5f # if s0 is 1 and s1 is 1, then we don't add the number (we must have read a don't)
+4:
 	add t1, t0, t1
+5:
 	sw t1, 4(sp)
 	j 1b
 2:
