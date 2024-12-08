@@ -10,7 +10,6 @@
 parse_input_file:
 	addi sp, sp, -16
 	sw ra, 0(sp)
-	# Function here
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
@@ -22,8 +21,8 @@ parse_input_file:
 # a3 - row pos
 # a4 - col pos
 # a5 - search string
-.global seach_pos
-seach_pos:
+.global search_pos
+search_pos:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 	# Function here
