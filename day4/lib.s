@@ -16,11 +16,11 @@ parse_input_file:
 
 	# Get length of line, store at 4(sp)
 	mv t0, a0
-.L_increase:
+.L_parse_input_file_increase:
 	addi t0, t0, 1
 	li t1, '\n'
 	lb t2, 0(t0)
-	bne t1, t2, .L_increase
+	bne t1, t2, .L_parse_input_file_increase
 	# subtract difference
 	sub t0, t0, a0
 	sw t0, 4(sp)
@@ -62,6 +62,45 @@ search_pos:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 	# Function here
+
+	# Get search string length, store at 4(sp)
+	mv t0, a5
+.L_search_pos_increase:
+	addi t0, t0, 1
+	lb t1, 0(t0)
+	bnez t1, .L_search_pos_increase
+	# subtract difference
+	sub t0, t0, a0
+	sw t0, 4(sp)
+
+	# Check if we can read in each direction set a bit in s0 for each:
+	mv zero, s0
+	# Up (col pos >= (str len - 1)) 0x1
+	
+	# Down ((col len - col pos) < (str len - 1)) 0x10
+
+	# Left (row pos >= (str len - 1)) 0x100
+	
+	# Right ((row len - row pos) < (str len - 1)) 0x1000
+
+	# From that we can see if we can do all 8
+
+	# U = 0x1
+
+	# D = 0x10
+
+	# L = 0x100
+
+	# R = 0x1000
+
+	# UL = 0x101
+
+	# UR = 0x1001
+
+	# DL = 0x110
+
+	# DR = 0x1010
+
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
