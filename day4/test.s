@@ -17,38 +17,39 @@ parse_input_file2result: .string "XMASXMASX"
 search_pos_word_1_8: .string "ABC"
 .equ search_pos_count_1_8, 1
 .equ search_pos_xy_len_1_8, 3
-search_pos1name: .string "search_pos[0][0] - check R(L->R): "
-search_pos1data: .string "ABC......"
-.equ search_pos1_row_pos, 0
+search_pos1name: .string "search_pos[1][0] - check R(L->R): "
+search_pos1data: .string "...ABC..."
+.equ search_pos1_row_pos, 1
 .equ search_pos1_col_pos, 0
-search_pos2name: .string "search_pos[0][2] - check L(R->L): "
-search_pos2data: .string "CBA......"
+search_pos2name: .string "search_pos[0][0] - check DR(TL->BR): "
+search_pos2data: .string "A...B...C"
 .equ search_pos2_row_pos, 0
-.equ search_pos2_col_pos, 2
+.equ search_pos2_col_pos, 0
 search_pos3name: .string "search_pos[0][1] - check D(U->D): "
 search_pos3data: .string ".A..B..C."
 .equ search_pos3_row_pos, 0
-.equ search_pos3_col_pos, 0
-search_pos4name: .string "search_pos[2][1] - check U(D->U): "
-search_pos4data: .string ".C..B..A."
-.equ search_pos4_row_pos, 2
-.equ search_pos4_col_pos, 1
-search_pos5name: .string "search_pos[0][0] - check DR(TL->BR): "
-search_pos5data: .string "A...B...C"
-.equ search_pos5_row_pos, 0
-.equ search_pos5_col_pos, 0
+.equ search_pos3_col_pos, 1
+search_pos4name: .string "search_pos[0][2] - check DL(TR->BL): "
+search_pos4data: .string "..A.B.C.."
+.equ search_pos4_row_pos, 0
+.equ search_pos4_col_pos, 2
+search_pos5name: .string "search_pos[1][2] - check L(R->L): "
+search_pos5data: .string "...CBA..."
+.equ search_pos5_row_pos, 1
+.equ search_pos5_col_pos, 2
 search_pos6name: .string "search_pos[2][2] - check UL(BR->TL): "
 search_pos6data: .string "C...B...A"
 .equ search_pos6_row_pos, 2
 .equ search_pos6_col_pos, 2
-search_pos7name: .string "search_pos[2][0] - check UR(BL->TR): "
-search_pos7data: .string "..C.B.A.."
+search_pos7name: .string "search_pos[2][1] - check U(D->U): "
+search_pos7data: .string ".C..B..A."
 .equ search_pos7_row_pos, 2
-.equ search_pos7_col_pos, 0
-search_pos8name: .string "search_pos[0][2] - check DL(TR->BL): "
-search_pos8data: .string "..A.B.C.."
-.equ search_pos8_row_pos, 0
-.equ search_pos8_col_pos, 2
+.equ search_pos7_col_pos, 1
+search_pos8name: .string "search_pos[2][0] - check UR(BL->TR): "
+search_pos8data: .string "..C.B.A.."
+.equ search_pos8_row_pos, 2
+.equ search_pos8_col_pos, 0
+
 # Check that the sum is returned if multiple of the checks are valid
 search_pos_word_9: .string "AA"
 .equ search_pos_count_9, 8
@@ -155,10 +156,11 @@ search_pos9data: .string "AAAAAAAAA"
 	li a7, search_pos_count_1_8
 	call test_search_pos
 
+bp:
 	la a0, search_pos8name
 	la a1, search_pos8data
 	li a2, search_pos_xy_len_1_8
-	li a4, search_pos_xy_len_1_8
+	li a3, search_pos_xy_len_1_8
 	li a4, search_pos8_row_pos
 	li a5, search_pos8_col_pos
 	la a6, search_pos_word_1_8
@@ -249,7 +251,7 @@ test_search_pos:
 	lw a3, 16(sp)
 	lw a4, 20(sp)
 	lw a5, 24(sp)
-
+bp3:
 	call search_pos
 	lw a1, 24(sp)
 	call test_eq
