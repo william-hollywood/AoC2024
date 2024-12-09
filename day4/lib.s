@@ -52,6 +52,19 @@ parse_input_file:
 	addi sp, sp, 16
 	ret
 
+row_col_to_addr:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+
+	mul t0, a1, a2 # row offset
+	add t0, t0, a3 # col offset
+	add t0, t0, a0 # add base offset
+
+	mv a0, t0
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
 # search_pos - search the current position for a given string
 # a0 - array_pos
 # a1 - row len
@@ -152,15 +165,14 @@ search_pos:
 	bne t0, t1, .L_search_pos_D # If not, skip to next possible one (skip DR)
 
 	# Get address of char in the array
-	lw t0, 16(sp)
-	lw t1, 24(sp)
-	mul t0, t0, t1 # row offset
-	lw t1, 28(sp)
-	add t0, t0, t1 # col offset
-	lw t1, 12(sp)
-	add t0, t0, t1 # add base offset
+	lw a0, 12(sp) # array_pos
+	lw a1, 16(sp) # row len
+	lw a2, 24(sp) # row pos
+	lw a3, 28(sp) # col pos
+	li a4, 0
+	li a5, 1
+	call row_col_to_addr
 
-	mv a0, t0
 	lw a1, 32(sp) # search str
 	lw a2, 4(sp)  # str len
 	call check_eq_mem
