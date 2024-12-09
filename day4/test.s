@@ -156,7 +156,6 @@ search_pos9data: .string "AAAAAAAAA"
 	li a7, search_pos_count_1_8
 	call test_search_pos
 
-bp:
 	la a0, search_pos8name
 	la a1, search_pos8data
 	li a2, search_pos_xy_len_1_8
@@ -235,7 +234,6 @@ test_search_pos:
 	addi sp, sp, -32
 	sw ra, 0(sp)
 
-	call print
 	# Store locals
 	sw a1, 4(sp) # data
 	sw a2, 8(sp) # row len of data
@@ -245,15 +243,16 @@ test_search_pos:
 	sw a6, 24(sp) # search word
 	sw a7, 28(sp) # expected count
 
+	call print
+
 	lw a0, 4(sp)
 	lw a1, 8(sp)
 	lw a2, 12(sp)
 	lw a3, 16(sp)
 	lw a4, 20(sp)
 	lw a5, 24(sp)
-bp3:
 	call search_pos
-	lw a1, 24(sp)
+	lw a1, 28(sp)
 	call test_eq
 
 	lw ra, 0(sp)
