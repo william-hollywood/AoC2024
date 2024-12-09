@@ -52,6 +52,15 @@ parse_input_file:
 	addi sp, sp, 16
 	ret
 
+
+# row_col_to_addr - read tin
+# a0 - arr base addr
+# a1 - row len
+# a2 - row pos
+# a3 - col pos
+# Returns
+# a0 - addr of char
+.global row_col_to_addr
 row_col_to_addr:
 	addi sp, sp, -16
 	sw ra, 0(sp)
@@ -61,6 +70,48 @@ row_col_to_addr:
 	add t0, t0, a0 # add base offset
 
 	mv a0, t0
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+# move_delta_to_str - take in a char row, col, deltas, and string len, move string into TMP_ARR
+# a0 - src arr pos
+# a1 row len
+# a2 row pos
+# a3 col pos
+# a4 str len
+# a5 row delta
+# a6 col delta
+.global move_delta_to_str
+move_delta_to_str:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+
+	sw a0, 4(sp) # array_pos
+
+	sw a2, 8(sp)
+	sw a3, 12(sp)
+	li t5, TMP_ARR
+	mv t6, a4
+.L_move_delta_to_str_loop:
+	lw a0, 4(sp)
+	lw a2, 8(sp)
+	lw a3, 12(sp)
+	call row_col_to_addr
+	lb t0, 0(a0)
+	sb t0, 0(t5)
+
+	lw t0, 8(sp)
+	add t0, t0, a5
+	sw t0, 8(sp)
+	lw t0, 12(sp)
+	add t0, t0, a6
+	sw t0, 12(sp)
+
+	addi t5, t5, 1
+	addi t6, t6, -1
+	bnez t6, .L_move_delta_to_str_loop
+
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
@@ -155,7 +206,7 @@ search_pos:
 
 .L_search_pos_find:
 	# From that we can see if we can do all 8
-	mv t6, zero # reset counter reg
+	mv s1, zero # reset counter reg
 	# Looking clockwise from R
 	# R:  0x0001
 .L_search_pos_R:
@@ -169,33 +220,186 @@ search_pos:
 	lw a1, 16(sp) # row len
 	lw a2, 24(sp) # row pos
 	lw a3, 28(sp) # col pos
-	li a4, 0
-	li a5, 1
-	call row_col_to_addr
+	lw a4, 4(sp)
+	li a5, 0
+	li a6, 1
+	call move_delta_to_str
 
+	li a0, TMP_ARR
 	lw a1, 32(sp) # search str
 	lw a2, 4(sp)  # str len
 	call check_eq_mem
 	bnez a0, .L_search_pos_DR # if mem doesn't match, go next
-	addi t6, t6, 1
+	addi s1, s1, 1
 
 	# DR: 0x0011
 .L_search_pos_DR:
+	# Check to see if the mask matches
+	li t0, 0x0011
+	and t1, s0, t0
+	bne t0, t1, .L_search_pos_D # If not, skip to next possible one (skip DR)
+
+	# Get address of char in the array
+	lw a0, 12(sp) # array_pos
+	lw a1, 16(sp) # row len
+	lw a2, 24(sp) # row pos
+	lw a3, 28(sp) # col pos
+	lw a4, 4(sp)
+	li a5, 1
+	li a6, 1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	lw a1, 32(sp) # search str
+	lw a2, 4(sp)  # str len
+	call check_eq_mem
+	bnez a0, .L_search_pos_D # if mem doesn't match, go next
+	addi s1, s1, 1
 	# D:  0x0010
 .L_search_pos_D:
+	# Check to see if the mask matches
+	li t0, 0x0010
+	and t1, s0, t0
+	bne t0, t1, .L_search_pos_L # If not, skip to next possible one (skip DR)
+
+	# Get address of char in the array
+	lw a0, 12(sp) # array_pos
+	lw a1, 16(sp) # row len
+	lw a2, 24(sp) # row pos
+	lw a3, 28(sp) # col pos
+	lw a4, 4(sp)
+	li a5, 1
+	li a6, 0
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	lw a1, 32(sp) # search str
+	lw a2, 4(sp)  # str len
+	call check_eq_mem
+	bnez a0, .L_search_pos_DL # if mem doesn't match, go next
+	addi s1, s1, 1
 	# DL: 0x0110
 .L_search_pos_DL:
+	# Check to see if the mask matches
+	li t0, 0x0110
+	and t1, s0, t0
+	bne t0, t1, .L_search_pos_L # If not, skip to next possible one (skip DR)
+
+	# Get address of char in the array
+	lw a0, 12(sp) # array_pos
+	lw a1, 16(sp) # row len
+	lw a2, 24(sp) # row pos
+	lw a3, 28(sp) # col pos
+	lw a4, 4(sp)
+	li a5, 1
+	li a6, -1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	lw a1, 32(sp) # search str
+	lw a2, 4(sp)  # str len
+	call check_eq_mem
+	bnez a0, .L_search_pos_L # if mem doesn't match, go next
+	addi s1, s1, 1
 	# L:  0x0100
 .L_search_pos_L:
+	# Check to see if the mask matches
+	li t0, 0x0100
+	and t1, s0, t0
+	bne t0, t1, .L_search_pos_U # If not, skip to next possible one (skip DR)
+
+	# Get address of char in the array
+	lw a0, 12(sp) # array_pos
+	lw a1, 16(sp) # row len
+	lw a2, 24(sp) # row pos
+	lw a3, 28(sp) # col pos
+	lw a4, 4(sp)
+	li a5, 0
+	li a6, -1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	lw a1, 32(sp) # search str
+	lw a2, 4(sp)  # str len
+	call check_eq_mem
+	bnez a0, .L_search_pos_UL # if mem doesn't match, go next
+	addi s1, s1, 1
 	# UL: 0x1100
 .L_search_pos_UL:
+	# Check to see if the mask matches
+	li t0, 0x0001
+	and t1, s0, t0
+	bne t0, t1, .L_search_pos_U # If not, skip to next possible one (skip DR)
+
+	# Get address of char in the array
+	lw a0, 12(sp) # array_pos
+	lw a1, 16(sp) # row len
+	lw a2, 24(sp) # row pos
+	lw a3, 28(sp) # col pos
+	lw a4, 4(sp)
+	li a5, -1
+	li a6, -1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	lw a1, 32(sp) # search str
+	lw a2, 4(sp)  # str len
+	call check_eq_mem
+	bnez a0, .L_search_pos_U # if mem doesn't match, go next
+	addi s1, s1, 1
 	# U:  0x1000
 .L_search_pos_U:
+	# Check to see if the mask matches
+	li t0, 0x0001
+	and t1, s0, t0
+	bne t0, t1, .L_search_pos_end # If not, skip to next possible one (skip DR)
+
+	# Get address of char in the array
+	lw a0, 12(sp) # array_pos
+	lw a1, 16(sp) # row len
+	lw a2, 24(sp) # row pos
+	lw a3, 28(sp) # col pos
+	lw a4, 4(sp)
+	li a5, -1
+	li a6, 0
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	lw a1, 32(sp) # search str
+	lw a2, 4(sp)  # str len
+	call check_eq_mem
+	bnez a0, .L_search_pos_UR # if mem doesn't match, go next
+	addi s1, s1, 1
 	# UR: 0x1001
 .L_search_pos_UR:
+	# Check to see if the mask matches
+	li t0, 0x0001
+	and t1, s0, t0
+	bne t0, t1, .L_search_pos_end # If not, skip to next possible one (skip DR)
 
-	mv zero, s0
-	mv a0, t6
+	# Get address of char in the array
+	lw a0, 12(sp) # array_pos
+	lw a1, 16(sp) # row len
+	lw a2, 24(sp) # row pos
+	lw a3, 28(sp) # col pos
+	lw a4, 4(sp)
+	li a5, -1
+	li a6, 1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	lw a1, 32(sp) # search str
+	lw a2, 4(sp)  # str len
+	call check_eq_mem
+	bnez a0, .L_search_pos_end # if mem doesn't match, go next
+	addi s1, s1, 1
+
+.L_search_pos_end:
+	mv a0, s1
+
+	mv s0, zero
+	mv s1, zero
+
 	lw ra, 0(sp)
 	addi sp, sp, 48
 	ret

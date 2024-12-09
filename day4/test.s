@@ -13,6 +13,16 @@ parse_input_file2check1: .string "\ta0 = 3: "
 parse_input_file2check2: .string "\ta1 = 3: "
 parse_input_file2result: .string "XMASXMASX"
 
+# row_col_to_addr - check it works for rows
+row_col_to_addrdata: .string "123456789"
+row_col_to_addr1name: .string "row_col_to_addr - [0][0]: "
+row_col_to_addr2name: .string "row_col_to_addr - [1][1]: "
+row_col_to_addr3name: .string "row_col_to_addr - [2][2]: "
+
+# move_delta_to_str
+
+# TODO
+
 # Check each of the 8 search directions, U,D,L,R,UL,UR,DL,DR
 search_pos_word_1_8: .string "ABC"
 .equ search_pos_count_1_8, 1
@@ -84,6 +94,43 @@ search_pos9data: .string "AAAAAAAAA"
 	li a5, 3
 	la a6, parse_input_file2result
 	call test_parse_input_file
+
+# TEST move_delta_to_str
+
+# TEST row_col_to_addr
+	la a0, row_col_to_addr1name
+	call print
+
+	la a0, row_col_to_addrdata
+	li a1, 3
+	li a2, 0
+	li a3, 0
+	call row_col_to_addr
+	lb a0, 0(a0)
+	li a1, '1'
+	call test_eq
+
+	la a0, row_col_to_addr2name
+	call print
+	la a0, row_col_to_addrdata
+	li a1, 3
+	li a2, 1
+	li a3, 1
+	call row_col_to_addr
+	lb a0, 0(a0)
+	li a1, '5'
+	call test_eq
+
+	la a0, row_col_to_addr3name
+	call print
+	la a0, row_col_to_addrdata
+	li a1, 3
+	li a2, 2
+	li a3, 2
+	call row_col_to_addr
+	lb a0, 0(a0)
+	li a1, '9'
+	call test_eq
 
 # TEST seach_pos
 	la a0, search_pos1name
