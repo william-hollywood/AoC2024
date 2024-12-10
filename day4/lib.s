@@ -1,5 +1,5 @@
 .section .lib
-
+.equ LOADED_ARR, 0x87400000
 .equ TMP_ARR, 0x87f00000
 
 # parse_input_file - parse the file specified by a0 into a 2d array at location a1
@@ -82,13 +82,13 @@ row_col_to_addr:
 # a4 str len
 # a5 row delta
 # a6 col delta
+# a7 search str
 .global move_delta_to_str
 move_delta_to_str:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
 	sw a0, 4(sp) # array_pos
-
 	sw a2, 8(sp)
 	sw a3, 12(sp)
 	li t5, TMP_ARR
@@ -111,6 +111,21 @@ move_delta_to_str:
 	addi t5, t5, 1
 	addi t6, t6, -1
 	bnez t6, .L_move_delta_to_str_loop
+
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+calc_and_cmp_str_from_move_delta:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	mv a1, a7 # search str
+	mv a2, a4 # str len
+	call check_eq_mem
 
 	lw ra, 0(sp)
 	addi sp, sp, 16
@@ -155,7 +170,7 @@ search_pos:
 	# Check if we can read in each direction set a bit in s0 for each:
 	mv s0, zero
 	# Right: (col pos + (str len - 1)) < col len
-	# Sets 0x0001
+	# Sets 0b0001
 	mv t0, a4
 	lw t1, 8(sp)
 	add t0, t0, t1
@@ -167,7 +182,7 @@ search_pos:
 
 .L_search_pos_can_down:
 	# Down: (row pos + (str len - 1)) < row len
-	# Sets 0x0010
+	# Sets 0b0010
 	mv t0, a3
 	lw t1, 8(sp)
 	add t0, t0, t1
@@ -180,7 +195,7 @@ search_pos:
 
 .L_search_pos_can_left:
 	# Left: (col pos - (str len - 1)) > -1 (>= 0)
-	# Sets 0x0100
+	# Sets 0b0100
 	mv t0, a4
 	lw t1, 8(sp)
 	sub t0, t0, t1
@@ -193,7 +208,7 @@ search_pos:
 
 .L_search_pos_can_up:
 	# Up: (row pos - (str len - 1)) > -1 (>= 0)
-	# Sets 0x1000
+	# Sets 0b1000
 	mv t0, a3
 	lw t1, 8(sp)
 	sub t0, t0, t1
@@ -208,10 +223,10 @@ search_pos:
 	# From that we can see if we can do all 8
 	mv s1, zero # reset counter reg
 	# Looking clockwise from R
-	# R:  0x0001
+	# R:  0b0001
 .L_search_pos_R:
 	# Check to see if the mask matches
-	li t0, 0x0001
+	li t0, 0b0001
 	and t1, s0, t0
 	bne t0, t1, .L_search_pos_D # If not, skip to next possible one (skip DR)
 
@@ -220,22 +235,19 @@ search_pos:
 	lw a1, 16(sp) # row len
 	lw a2, 24(sp) # row pos
 	lw a3, 28(sp) # col pos
-	lw a4, 4(sp)
+	lw a4, 4(sp)  # str len
 	li a5, 0
 	li a6, 1
-	call move_delta_to_str
+	lw a7, 32(sp)
+	call calc_and_cmp_str_from_move_delta
 
-	li a0, TMP_ARR
-	lw a1, 32(sp) # search str
-	lw a2, 4(sp)  # str len
-	call check_eq_mem
 	bnez a0, .L_search_pos_DR # if mem doesn't match, go next
 	addi s1, s1, 1
 
-	# DR: 0x0011
+	# DR: 0b0011
 .L_search_pos_DR:
 	# Check to see if the mask matches
-	li t0, 0x0011
+	li t0, 0b0011
 	and t1, s0, t0
 	bne t0, t1, .L_search_pos_D # If not, skip to next possible one (skip DR)
 
@@ -247,18 +259,15 @@ search_pos:
 	lw a4, 4(sp)
 	li a5, 1
 	li a6, 1
-	call move_delta_to_str
+	lw a7, 32(sp)
+	call calc_and_cmp_str_from_move_delta
 
-	li a0, TMP_ARR
-	lw a1, 32(sp) # search str
-	lw a2, 4(sp)  # str len
-	call check_eq_mem
 	bnez a0, .L_search_pos_D # if mem doesn't match, go next
 	addi s1, s1, 1
-	# D:  0x0010
+	# D:  0b0010
 .L_search_pos_D:
 	# Check to see if the mask matches
-	li t0, 0x0010
+	li t0, 0b0010
 	and t1, s0, t0
 	bne t0, t1, .L_search_pos_L # If not, skip to next possible one (skip DR)
 
@@ -270,18 +279,15 @@ search_pos:
 	lw a4, 4(sp)
 	li a5, 1
 	li a6, 0
-	call move_delta_to_str
+	lw a7, 32(sp)
+	call calc_and_cmp_str_from_move_delta
 
-	li a0, TMP_ARR
-	lw a1, 32(sp) # search str
-	lw a2, 4(sp)  # str len
-	call check_eq_mem
 	bnez a0, .L_search_pos_DL # if mem doesn't match, go next
 	addi s1, s1, 1
-	# DL: 0x0110
+	# DL: 0b0110
 .L_search_pos_DL:
 	# Check to see if the mask matches
-	li t0, 0x0110
+	li t0, 0b0110
 	and t1, s0, t0
 	bne t0, t1, .L_search_pos_L # If not, skip to next possible one (skip DR)
 
@@ -293,18 +299,15 @@ search_pos:
 	lw a4, 4(sp)
 	li a5, 1
 	li a6, -1
-	call move_delta_to_str
+	lw a7, 32(sp)
+	call calc_and_cmp_str_from_move_delta
 
-	li a0, TMP_ARR
-	lw a1, 32(sp) # search str
-	lw a2, 4(sp)  # str len
-	call check_eq_mem
 	bnez a0, .L_search_pos_L # if mem doesn't match, go next
 	addi s1, s1, 1
-	# L:  0x0100
+	# L:  0b0100
 .L_search_pos_L:
 	# Check to see if the mask matches
-	li t0, 0x0100
+	li t0, 0b0100
 	and t1, s0, t0
 	bne t0, t1, .L_search_pos_U # If not, skip to next possible one (skip DR)
 
@@ -316,18 +319,15 @@ search_pos:
 	lw a4, 4(sp)
 	li a5, 0
 	li a6, -1
-	call move_delta_to_str
+	lw a7, 32(sp)
+	call calc_and_cmp_str_from_move_delta
 
-	li a0, TMP_ARR
-	lw a1, 32(sp) # search str
-	lw a2, 4(sp)  # str len
-	call check_eq_mem
 	bnez a0, .L_search_pos_UL # if mem doesn't match, go next
 	addi s1, s1, 1
-	# UL: 0x1100
+	# UL: 0b1100
 .L_search_pos_UL:
 	# Check to see if the mask matches
-	li t0, 0x0001
+	li t0, 0b1100
 	and t1, s0, t0
 	bne t0, t1, .L_search_pos_U # If not, skip to next possible one (skip DR)
 
@@ -339,18 +339,15 @@ search_pos:
 	lw a4, 4(sp)
 	li a5, -1
 	li a6, -1
-	call move_delta_to_str
+	lw a7, 32(sp)
+	call calc_and_cmp_str_from_move_delta
 
-	li a0, TMP_ARR
-	lw a1, 32(sp) # search str
-	lw a2, 4(sp)  # str len
-	call check_eq_mem
 	bnez a0, .L_search_pos_U # if mem doesn't match, go next
 	addi s1, s1, 1
-	# U:  0x1000
+	# U:  0b1000
 .L_search_pos_U:
 	# Check to see if the mask matches
-	li t0, 0x0001
+	li t0, 0b1000
 	and t1, s0, t0
 	bne t0, t1, .L_search_pos_end # If not, skip to next possible one (skip DR)
 
@@ -362,18 +359,15 @@ search_pos:
 	lw a4, 4(sp)
 	li a5, -1
 	li a6, 0
-	call move_delta_to_str
+	lw a7, 32(sp)
+	call calc_and_cmp_str_from_move_delta
 
-	li a0, TMP_ARR
-	lw a1, 32(sp) # search str
-	lw a2, 4(sp)  # str len
-	call check_eq_mem
 	bnez a0, .L_search_pos_UR # if mem doesn't match, go next
 	addi s1, s1, 1
-	# UR: 0x1001
+	# UR: 0b1001
 .L_search_pos_UR:
 	# Check to see if the mask matches
-	li t0, 0x0001
+	li t0, 0b1001
 	and t1, s0, t0
 	bne t0, t1, .L_search_pos_end # If not, skip to next possible one (skip DR)
 
@@ -385,12 +379,9 @@ search_pos:
 	lw a4, 4(sp)
 	li a5, -1
 	li a6, 1
-	call move_delta_to_str
+	lw a7, 32(sp)
+	call calc_and_cmp_str_from_move_delta
 
-	li a0, TMP_ARR
-	lw a1, 32(sp) # search str
-	lw a2, 4(sp)  # str len
-	call check_eq_mem
 	bnez a0, .L_search_pos_end # if mem doesn't match, go next
 	addi s1, s1, 1
 
@@ -402,4 +393,19 @@ search_pos:
 
 	lw ra, 0(sp)
 	addi sp, sp, 48
+	ret
+
+
+# process_file - process a file
+# a0 - file data location
+# a1 - string to search for
+# returns
+# a0 - number of string matches
+.global process_file
+process_file:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+
+	lw ra, 0(sp)
+	addi sp, sp, 16
 	ret

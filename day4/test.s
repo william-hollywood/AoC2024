@@ -1,5 +1,5 @@
 .section .data
-.equ ARR_TMP_LOC, 0x85000000
+.equ TMP_ARR, 0x87f00000
 parse_input_file1name: .string "parse_input_file - parse 2x2 file\n"
 parse_input_file1data: .string "XM\nAS"
 parse_input_file1check1: .string "\ta0 = 2: "
@@ -20,8 +20,22 @@ row_col_to_addr2name: .string "row_col_to_addr - [1][1]: "
 row_col_to_addr3name: .string "row_col_to_addr - [2][2]: "
 
 # move_delta_to_str
-
-# TODO
+move_delta_to_str1name: .string "move_delta_to_str - R(0,1): "
+move_delta_to_str1check: .string "456"
+move_delta_to_str2name: .string "move_delta_to_str - DR(1,1): "
+move_delta_to_str2check: .string "159"
+move_delta_to_str3name: .string "move_delta_to_str - D(1,0): "
+move_delta_to_str3check: .string "258"
+move_delta_to_str4name: .string "move_delta_to_str - DL(1,-1): "
+move_delta_to_str4check: .string "357"
+move_delta_to_str5name: .string "move_delta_to_str - L(0,-1): "
+move_delta_to_str5check: .string "654"
+move_delta_to_str6name: .string "move_delta_to_str - UL(-1,-1): "
+move_delta_to_str6check: .string "951"
+move_delta_to_str7name: .string "move_delta_to_str - U(-1,0): "
+move_delta_to_str7check: .string "852"
+move_delta_to_str8name: .string "move_delta_to_str - UR(-1,1): "
+move_delta_to_str8check: .string "753"
 
 # Check each of the 8 search directions, U,D,L,R,UL,UR,DL,DR
 search_pos_word_1_8: .string "ABC"
@@ -70,6 +84,20 @@ search_pos9data: .string "AAAAAAAAA"
 .equ search_pos9_col_pos, 1
 # TODO: Check that the logic obeys row/col max and does not exceed any bounds
 # NOTE: can do thing using a 4x4 grid, and passing in 3 instead of 4 to prevent a 4 long match
+
+process_file1name: .string "process_file - 9x9 example: "
+process_file1data: .string "MMMSXXMASM\
+MSAMXMSMSA\
+AMXSXMAAMM\
+MSAMASMSMX\
+XMASAMXAMM\
+XXAMMXXAMA\
+SMSMSASXSS\
+SAXAMASAAA\
+MAMMMXMMMM\
+MXMXAXMASX"
+process_file1search: .string "XMAS"
+.equ process_file1check, 18
 
 # Program main
 .section .text
@@ -130,6 +158,152 @@ search_pos9data: .string "AAAAAAAAA"
 	call row_col_to_addr
 	lb a0, 0(a0)
 	li a1, '9'
+	call test_eq
+
+
+# TEST move_delta_to_str
+	la a0, move_delta_to_str1name
+	call print
+	la a0, row_col_to_addrdata
+	li a1, search_pos_xy_len_1_8
+	li a2, search_pos1_row_pos
+	li a3, search_pos1_col_pos
+	li a4, 3
+	li a5, 0
+	li a6, 1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	la a1, move_delta_to_str1check
+	mv a2, a4 # str len
+	call check_eq_mem
+	li a1, 0
+	call test_eq
+
+	la a0, move_delta_to_str2name
+	call print
+	la a0, row_col_to_addrdata
+	li a1, search_pos_xy_len_1_8
+	li a2, search_pos2_row_pos
+	li a3, search_pos2_col_pos
+	li a4, 3
+	li a5, 1
+	li a6, 1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	la a1, move_delta_to_str2check
+	mv a2, a4 # str len
+	call check_eq_mem
+	li a1, 0
+	call test_eq
+
+	la a0, move_delta_to_str3name
+	call print
+	la a0, row_col_to_addrdata
+	li a1, search_pos_xy_len_1_8
+	li a2, search_pos3_row_pos
+	li a3, search_pos3_col_pos
+	li a4, 3
+	li a5, 1
+	li a6, 0
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	la a1, move_delta_to_str3check
+	mv a2, a4 # str len
+	call check_eq_mem
+	li a1, 0
+	call test_eq
+
+	la a0, move_delta_to_str4name
+	call print
+	la a0, row_col_to_addrdata
+	li a1, search_pos_xy_len_1_8
+	li a2, search_pos4_row_pos
+	li a3, search_pos4_col_pos
+	li a4, 3
+	li a5, 1
+	li a6, -1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	la a1, move_delta_to_str4check
+	mv a2, a4 # str len
+	call check_eq_mem
+	li a1, 0
+	call test_eq
+
+	la a0, move_delta_to_str5name
+	call print
+	la a0, row_col_to_addrdata
+	li a1, search_pos_xy_len_1_8
+	li a2, search_pos5_row_pos
+	li a3, search_pos5_col_pos
+	li a4, 3
+	li a5, 0
+	li a6, -1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	la a1, move_delta_to_str5check
+	mv a2, a4 # str len
+	call check_eq_mem
+	li a1, 0
+	call test_eq
+
+	la a0, move_delta_to_str6name
+	call print
+	la a0, row_col_to_addrdata
+	li a1, search_pos_xy_len_1_8
+	li a2, search_pos6_row_pos
+	li a3, search_pos6_col_pos
+	li a4, 3
+	li a5, -1
+	li a6, -1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	la a1, move_delta_to_str6check
+	mv a2, a4 # str len
+	call check_eq_mem
+	li a1, 0
+	call test_eq
+
+	la a0, move_delta_to_str7name
+	call print
+	la a0, row_col_to_addrdata
+	li a1, search_pos_xy_len_1_8
+	li a2, search_pos7_row_pos
+	li a3, search_pos7_col_pos
+	li a4, 3
+	li a5, -1
+	li a6, 0
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	la a1, move_delta_to_str7check
+	mv a2, a4 # str len
+	call check_eq_mem
+	li a1, 0
+	call test_eq
+
+	la a0, move_delta_to_str8name
+	call print
+	la a0, row_col_to_addrdata
+	li a1, search_pos_xy_len_1_8
+	li a2, search_pos8_row_pos
+	li a3, search_pos8_col_pos
+	li a4, 3
+	li a5, -1
+	li a6, 1
+	call move_delta_to_str
+
+	li a0, TMP_ARR
+	la a1, move_delta_to_str8check
+	mv a2, a4 # str len
+	call check_eq_mem
+	li a1, 0
 	call test_eq
 
 # TEST seach_pos
@@ -223,6 +397,16 @@ search_pos9data: .string "AAAAAAAAA"
 	li a7, search_pos_count_9
 	call test_search_pos
 
+	la a0, process_file1name
+	call print
+
+	la a0, process_file1data
+	la a1, process_file1search
+	call process_file
+	li a1, process_file1check
+	call test_eq
+
+
 	addi sp, sp, 16
 # Print end
 	call end
@@ -240,7 +424,7 @@ test_parse_input_file:
 
 	call print
 	lw a0, 4(sp)
-	la a1, ARR_TMP_LOC
+	la a1, TMP_ARR
 	call parse_input_file
 	sw a0, 28(sp)
 	sw a1, 32(sp)
@@ -264,7 +448,7 @@ test_parse_input_file:
 	la a0, parse_input_filecheck3_2
 	call print
 
-	la a0, ARR_TMP_LOC
+	la a0, TMP_ARR
 	lw a1, 24(sp)
 	lw t0, 12(sp)
 	lw t1, 20(sp)

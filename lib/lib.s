@@ -94,7 +94,7 @@ gets:
 	lb t0, 0(a1)
 	sb t0, (a0)
 	addi a0, a0, 1
-	beqz t0, gets
+	beqz t0, .L_gets_exit
 .L_gets_check_LCR:
 	lb t1, 5(a1)
 	andi t1, t1, 1
