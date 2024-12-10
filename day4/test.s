@@ -413,6 +413,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	la a0, search_pos_cross1data
 	li a1, 1
 	li a2, 1
+	li a3, 3
 	call search_pos_cross
 
 	li a1, 1
@@ -425,6 +426,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	la a0, search_pos_cross2data
 	li a1, 1
 	li a2, 1
+	li a3, 3
 	call search_pos_cross
 
 	li a1, 0

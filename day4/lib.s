@@ -426,7 +426,7 @@ process_file:
 	lw t0, 8(sp)
 	lw t1, 20(sp)
 	beq t0, t1, .L_process_file_inner_end
-bp:
+
 	li a0, LOADED_ARR
 	lw a1, 12(sp)
 	lw a2, 8(sp)
@@ -457,35 +457,160 @@ bp:
 # a0 - arr base
 # a1 - row
 # a2 - col
+# a3 - row len
 # returns
 # a0 - !0 if "MAS" twice in a cross
 .global search_pos_cross
 search_pos_cross:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
 
-	# if char is 'A'
+	mv t4, zero # 'M' counter
+	mv t5, zero # 'S' counter
+	mv t6, zero # counter
+	sw a0, 4(sp)
+	sw a3, 8(sp)
+	sw a1, 12(sp)
+	sw a2, 16(sp)
 
+	# if char is 'A'
+	call row_col_to_addr
+	lb t0, 0(a0)
+	li t1, 'A'
+	bne t0, t1, .L_search_pos_cross_end
 	# check DR, DL, UL, UR for two 'M's and two 'S's
 
+	lw a0, 4(sp)
+	lw a1, 8(sp)
+	lw a2, 12(sp)
+	lw a3, 16(sp)
+	addi a2, a2, 1
+	addi a3, a3, 1
+	call row_col_to_addr
+	lb t0, 0(a0)
+	li t1, 'M'
+	bne t0, t1, 1f
+	addi t4, t4, 1
+1:
+	li t1, 'S'
+	bne t0, t1, 2f
+	addi t5, t5, 1
+2:
+	lw a0, 4(sp)
+	lw a1, 8(sp)
+	lw a2, 12(sp)
+	lw a3, 16(sp)
+	addi a2, a2, 1
+	addi a3, a3, -1
+	call row_col_to_addr
+	lb t0, 0(a0)
+	li t1, 'M'
+	bne t0, t1, 1f
+	addi t4, t4, 1
+1:
+	li t1, 'S'
+	bne t0, t1, 2f
+	addi t5, t5, 1
+2:
+	# UL
+	lw a0, 4(sp)
+	lw a1, 8(sp)
+	lw a2, 12(sp)
+	lw a3, 16(sp)
+	addi a2, a2, -1
+	addi a3, a3, -1
+	call row_col_to_addr
+	lb t0, 0(a0)
+	li t1, 'M'
+	bne t0, t1, 1f
+	addi t4, t4, 1
+1:
+	li t1, 'S'
+	bne t0, t1, 2f
+	addi t5, t5, 1
+2:
+	lw a0, 4(sp)
+	lw a1, 8(sp)
+	lw a2, 12(sp)
+	lw a3, 16(sp)
+	addi a2, a2, -1
+	addi a3, a3, 1
+	call row_col_to_addr
+	lb t0, 0(a0)
+	li t1, 'M'
+	bne t0, t1, 1f
+	addi t4, t4, 1
+1:
+	li t1, 'S'
+	bne t0, t1, 2f
+	addi t5, t5, 1
+2:
+	li t0, 2
+	bne t0, t4, .L_search_pos_cross_end
+	bne t0, t5, .L_search_pos_cross_end
+	addi t6, t6, 1
+.L_search_pos_cross_end:
+	mv a0, t6
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret
 
 # process_file_cross - Load and process a file counting all occurances of "MAS" in a cross
 .global process_file_cross
 process_file_cross:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
 
+	sw zero, 24(sp) # word count
+
 	# load file into TMP_ARR
+	li a1, LOADED_ARR
+	call parse_input_file
+
+	addi a0, a0, -1
+	addi a1, a1, -1
+	sw a0, 8(sp) # col len
+	sw a1, 12(sp) # row len
 
 	# for i/j = 1; i/j < row/col len - 1; i/j++
 	# check pos for "MAS" twice in cross
+	li t0, 1
+	sw t0, 16(sp) # i / row iter
+.L_process_file_cross_outer:
+	lw t0, 12(sp)
+	lw t1, 16(sp)
+	beq t0, t1, .L_process_file_cross_outer_end
+	li t0, 1
+	sw t0, 20(sp) # j / col iter
+.L_process_file_cross_inner:
+	lw t0, 8(sp)
+	lw t1, 20(sp)
+	beq t0, t1, .L_process_file_cross_inner_end
 
+	li a0, LOADED_ARR
+	lw a1, 16(sp)
+	lw a2, 20(sp)
+	lw a3, 12(sp)
+	addi a1, a1, 1
 
+	call search_pos_cross
+	lw t0, 24(sp)
+	add t0, t0, a0
+	sw t0, 24(sp)
+
+	lw t0, 20(sp)
+	addi t0, t0, 1
+	sw t0, 20(sp)
+	j .L_process_file_cross_inner
+.L_process_file_cross_inner_end:
+	lw t0, 16(sp)
+	addi t0, t0, 1
+	sw t0, 16(sp)
+	j .L_process_file_cross_outer
+.L_process_file_cross_outer_end:
 	# return count
+	lw a0, 24(sp)
 
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret
