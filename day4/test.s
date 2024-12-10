@@ -86,18 +86,17 @@ search_pos9data: .string "AAAAAAAAA"
 # NOTE: can do thing using a 4x4 grid, and passing in 3 instead of 4 to prevent a 4 long match
 
 process_file1name: .string "process_file - 10x10 example: "
-process_file1data: .string "MMMSXXMASM
-MSAMXMSMSA
-AMXSXMAAMM
-MSAMASMSMX
-XMASAMXAMM
-XXAMMXXAMA
-SMSMSASXSS
-SAXAMASAAA
-MAMMMXMMMM
-MXMXAXMASX"
+process_file1data: .string "MMMSXXMASM\nMSAMXMSMSA\nAMXSXMAAMM\nMSAMASMSMX\nXMASAMXAMM\nXXAMMXXAMA\nSMSMSASXSS\nSAXAMASAAA\nMAMMMXMMMM\nMXMXAXMASX"
 process_file1search: .string "XMAS"
 .equ process_file1check, 18
+
+search_pos_cross1name: .string "search_pos_cross - present: "
+search_pos_cross1data: .string "M.M.A.S.S"
+search_pos_cross2name: .string "search_pos_cross - not present: "
+search_pos_cross2data: .string "X.X.A.X.X"
+
+process_file_cross1name: .string "process_file_cross - 10x10 example: "
+.equ process_file_cross1check, 9
 
 # Program main
 .section .text
@@ -404,6 +403,41 @@ process_file1search: .string "XMAS"
 	la a1, process_file1search
 	call process_file
 	li a1, process_file1check
+	call test_eq
+
+# TEST search_pos_cross
+
+	la a0, search_pos_cross1name
+	call print
+
+	la a0, search_pos_cross1data
+	li a1, 1
+	li a2, 1
+	call search_pos_cross
+
+	li a1, 1
+	call test_eq
+
+
+	la a0, search_pos_cross2name
+	call print
+
+	la a0, search_pos_cross2data
+	li a1, 1
+	li a2, 1
+	call search_pos_cross
+
+	li a1, 0
+	call test_eq
+
+# TEST process_file_cross
+
+	la a0, process_file_cross1name
+	call print
+
+	la a0, process_file1data
+	call process_file_cross
+	li a1, process_file_cross1check
 	call test_eq
 
 	addi sp, sp, 16

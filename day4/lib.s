@@ -452,3 +452,40 @@ bp:
 	lw ra, 0(sp)
 	addi sp, sp, 32
 	ret
+
+# search_pos_cross - search a position for "MAS" twice in a cross
+# a0 - arr base
+# a1 - row
+# a2 - col
+# returns
+# a0 - !0 if "MAS" twice in a cross
+.global search_pos_cross
+search_pos_cross:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+
+	# if char is 'A'
+
+	# check DR, DL, UL, UR for two 'M's and two 'S's
+
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+# process_file_cross - Load and process a file counting all occurances of "MAS" in a cross
+.global process_file_cross
+process_file_cross:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+
+	# load file into TMP_ARR
+
+	# for i/j = 1; i/j < row/col len - 1; i/j++
+	# check pos for "MAS" twice in cross
+
+
+	# return count
+
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
