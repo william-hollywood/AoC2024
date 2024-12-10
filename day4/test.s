@@ -85,16 +85,16 @@ search_pos9data: .string "AAAAAAAAA"
 # TODO: Check that the logic obeys row/col max and does not exceed any bounds
 # NOTE: can do thing using a 4x4 grid, and passing in 3 instead of 4 to prevent a 4 long match
 
-process_file1name: .string "process_file - 9x9 example: "
-process_file1data: .string "MMMSXXMASM\
-MSAMXMSMSA\
-AMXSXMAAMM\
-MSAMASMSMX\
-XMASAMXAMM\
-XXAMMXXAMA\
-SMSMSASXSS\
-SAXAMASAAA\
-MAMMMXMMMM\
+process_file1name: .string "process_file - 10x10 example: "
+process_file1data: .string "MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
 MXMXAXMASX"
 process_file1search: .string "XMAS"
 .equ process_file1check, 18
@@ -405,7 +405,6 @@ process_file1search: .string "XMAS"
 	call process_file
 	li a1, process_file1check
 	call test_eq
-
 
 	addi sp, sp, 16
 # Print end

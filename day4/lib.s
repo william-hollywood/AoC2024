@@ -403,9 +403,52 @@ search_pos:
 # a0 - number of string matches
 .global process_file
 process_file:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
 
+	sw a1, 4(sp)
+	sw zero, 24(sp) # word count
+
+	# load input file
+	li a1, LOADED_ARR
+	call parse_input_file
+
+	sw a0, 8(sp) # col len
+	sw a1, 12(sp) # row len
+
+	sw zero, 16(sp) # i / row iter
+.L_process_file_outer:
+	lw t0, 12(sp)
+	lw t1, 16(sp)
+	beq t0, t1, .L_process_file_outer_end
+	sw zero, 20(sp) # j / col iter
+.L_process_file_inner:
+	lw t0, 8(sp)
+	lw t1, 20(sp)
+	beq t0, t1, .L_process_file_inner_end
+bp:
+	li a0, LOADED_ARR
+	lw a1, 12(sp)
+	lw a2, 8(sp)
+	lw a3, 16(sp)
+	lw a4, 20(sp)
+	lw a5, 4(sp)
+	call search_pos
+	lw t0, 24(sp)
+	add t0, t0, a0
+	sw t0, 24(sp)
+
+	lw t0, 20(sp)
+	addi t0, t0, 1
+	sw t0, 20(sp)
+	j .L_process_file_inner
+.L_process_file_inner_end:
+	lw t0, 16(sp)
+	addi t0, t0, 1
+	sw t0, 16(sp)
+	j .L_process_file_outer
+.L_process_file_outer_end:
+	lw a0, 24(sp)
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret
