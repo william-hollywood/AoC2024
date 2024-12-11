@@ -54,13 +54,14 @@ then
 fi
 
 echo "---------ASSEMBLING-------"
-OBJ_FILES=("lib/lib.o")
+OBJ_FILES=("lib/lib.o" "lib/libvec.o")
 
 if [ "${TEST}" == "y" ];
 then
-	OBJ_FILES+=("${TARGET}/test.o" "lib/libtest.o")
+	OBJ_FILES+=("${TARGET}/test.o" "lib/libtest.o" "lib/libvectest.o")
 	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "${TARGET}/test.s" -o "${TARGET}/test.o"
 	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "lib/libtest.s" -o "lib/libtest.o"
+	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "lib/libvectest.s" -o "lib/libvectest.o"
 fi
 
 if [ ! "$TARGET" = "lib" ];
@@ -75,6 +76,7 @@ then
 fi
 
 "${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "lib/lib.s" -o "lib/lib.o"
+"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "lib/libvec.s" -o "lib/libvec.o"
 
 echo "---------LINKING---------"
 RUN_BIN="${TARGET}/${TARGET}.bin"
