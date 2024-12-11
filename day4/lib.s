@@ -473,6 +473,10 @@ search_pos_cross:
 	sw a1, 12(sp)
 	sw a2, 16(sp)
 
+	lw a0, 4(sp)
+	lw a1, 8(sp)
+	lw a2, 12(sp)
+	lw a3, 16(sp)
 	# if char is 'A'
 	call row_col_to_addr
 	lb t0, 0(a0)
@@ -494,7 +498,7 @@ search_pos_cross:
 1:
 	li t1, 'S'
 	bne t0, t1, 2f
-	addi t5, t5, 1
+	addi t4, t4, 2
 2:
 	lw a0, 4(sp)
 	lw a1, 8(sp)
@@ -506,11 +510,11 @@ search_pos_cross:
 	lb t0, 0(a0)
 	li t1, 'M'
 	bne t0, t1, 1f
-	addi t4, t4, 1
+	addi t5, t5, 1
 1:
 	li t1, 'S'
 	bne t0, t1, 2f
-	addi t5, t5, 1
+	addi t5, t5, 2
 2:
 	# UL
 	lw a0, 4(sp)
@@ -527,7 +531,7 @@ search_pos_cross:
 1:
 	li t1, 'S'
 	bne t0, t1, 2f
-	addi t5, t5, 1
+	addi t4, t4, 2
 2:
 	lw a0, 4(sp)
 	lw a1, 8(sp)
@@ -539,13 +543,13 @@ search_pos_cross:
 	lb t0, 0(a0)
 	li t1, 'M'
 	bne t0, t1, 1f
-	addi t4, t4, 1
+	addi t5, t5, 1
 1:
 	li t1, 'S'
 	bne t0, t1, 2f
-	addi t5, t5, 1
+	addi t5, t5, 2
 2:
-	li t0, 2
+	li t0, 3
 	bne t0, t4, .L_search_pos_cross_end
 	bne t0, t5, .L_search_pos_cross_end
 	addi t6, t6, 1
@@ -591,8 +595,7 @@ process_file_cross:
 	lw a1, 16(sp)
 	lw a2, 20(sp)
 	lw a3, 12(sp)
-	addi a1, a1, 1
-
+	addi a3, a3, 1
 	call search_pos_cross
 	lw t0, 24(sp)
 	add t0, t0, a0

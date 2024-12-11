@@ -93,7 +93,9 @@ process_file1search: .string "XMAS"
 search_pos_cross1name: .string "search_pos_cross - present: "
 search_pos_cross1data: .string "M.M.A.S.S"
 search_pos_cross2name: .string "search_pos_cross - not present: "
-search_pos_cross2data: .string "X.X.A.X.X"
+search_pos_cross2data: .string "M.S.A.S.M"
+search_pos_cross3name: .string "search_pos_cross - not present: "
+search_pos_cross3data: .string "X.X.A.X.X"
 
 process_file_cross1name: .string "process_file_cross - 10x10 example: "
 .equ process_file_cross1check, 9
@@ -419,11 +421,22 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	li a1, 1
 	call test_eq
 
-
 	la a0, search_pos_cross2name
 	call print
 
 	la a0, search_pos_cross2data
+	li a1, 1
+	li a2, 1
+	li a3, 3
+	call search_pos_cross
+
+	li a1, 0
+	call test_eq
+
+	la a0, search_pos_cross3name
+	call print
+
+	la a0, search_pos_cross3data
 	li a1, 1
 	li a2, 1
 	li a3, 3

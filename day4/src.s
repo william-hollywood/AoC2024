@@ -8,6 +8,7 @@ newline: .string "\n"
 ok: .string "OK\n"
 phase1text: .string "Phase 1: Load file from stdin: "
 part1text: .string "Part 1: Find all strings in word search\nAnswer: "
+part2text: .string "Part 2: Find all \"MAS\" in a cross in word search\nAnswer: "
 
 # Program main
 .section .text
@@ -29,6 +30,25 @@ part1text: .string "Part 1: Find all strings in word search\nAnswer: "
 	li a0, FILE_BUFFER
 	la a1, search_str
 	call process_file
+
+	la a1, RESULT_LOC
+	call itos
+
+	la a0, RESULT_LOC
+	call print
+
+	la a0, newline
+	call print
+
+	la a0, part2text
+	call print
+
+	la a0, ok
+	call print
+
+	li a0, FILE_BUFFER
+	la a1, search_str
+	call process_file_cross
 
 	la a1, RESULT_LOC
 	call itos
