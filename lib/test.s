@@ -186,5 +186,7 @@ zerostr: .string "0"
 	mv a1, zero
 	call test_eq
 
+	call test_libvec
+
 # Print end
 	call end

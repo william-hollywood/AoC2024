@@ -58,10 +58,10 @@ OBJ_FILES=("lib/lib.o" "lib/libvec.o")
 
 if [ "${TEST}" == "y" ];
 then
-	OBJ_FILES+=("${TARGET}/test.o" "lib/libtest.o" "lib/libvectest.o")
+	OBJ_FILES+=("${TARGET}/test.o" "lib/libtest.o" "lib/testlibvec.o")
 	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "${TARGET}/test.s" -o "${TARGET}/test.o"
 	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "lib/libtest.s" -o "lib/libtest.o"
-	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "lib/libvectest.s" -o "lib/libvectest.o"
+	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "lib/testlibvec.s" -o "lib/testlibvec.o"
 fi
 
 if [ ! "$TARGET" = "lib" ];
