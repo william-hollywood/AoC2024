@@ -359,7 +359,6 @@ test_vec_push:
 
 	lw a1, 4(sp)
 	lw a2, 12(sp)
-bp:
 	call memcmp
 
 	li a1, 0

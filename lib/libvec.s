@@ -23,6 +23,8 @@ vec_get:
 # a0 - vector_base pos
 # a1 - address of item to push
 # a2 - item size (multiples of 1, 2 or 4 bytes)
+# returns
+# a0 - new size of vector
 .global vec_push
 vec_push:
 	addi sp, sp, -16
@@ -30,9 +32,9 @@ vec_push:
 	# vec_get current size plus one
 	# copy item into new pos
 	lw t0, 0(a0) # len
-	addi t0, t0, 1
-	sw t0, 0(a0)
-	sw t0, 4(sp) # len to insert at
+	addi t1, t0, 1
+	sw t1, 0(a0)
+	sw t1, 4(sp) # len to insert at
 	# get position of next empty space
 	mul t0, t0, a2 # offset from vec data
 	add t0, t0, a0
