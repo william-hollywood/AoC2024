@@ -125,7 +125,7 @@ calc_and_cmp_str_from_move_delta:
 	li a0, TMP_ARR
 	mv a1, a7 # search str
 	mv a2, a4 # str len
-	call check_eq_mem
+	call memcmp
 
 	lw ra, 0(sp)
 	addi sp, sp, 16

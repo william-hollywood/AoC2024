@@ -1,4 +1,4 @@
-.equ PUTS_LOC, 0x86000000
+.equ TMP_POS, 0x86000000
 .equ UART_BASE, 0x10000000
 
 .equ STACK_POS, 0x88000000
@@ -25,10 +25,11 @@ stoi3name: .string "stoi - character after '9' terminates: "
 stoi3data: .string "12:4"
 stoi4name: .string "stoi - empty str: "
 stoi4data: .string ":"
-test_eq_mem1name: .string "test_eq_mem - Check eq mem: "
-test_eq_mem1data: .string "string"
-test_eq_mem2name: .string "test_eq_mem - Check neq mem: "
-test_eq_mem2data: .string "str!ng"
+memcmp1name: .string "memcmp - Check eq mem: "
+memcmp1data: .string "string"
+memcmp2name: .string "memcmp - Check neq mem: "
+memcmp2data: .string "str!ng"
+memcpy1name: .string "memcpy - copies 7 bytes: "
 itos1name: .string "itos - normal number: "
 itos2name: .string "itos - negative number: "
 itos3name: .string "itos - zero: "
@@ -44,10 +45,10 @@ zerostr: .string "0"
 	la a0, puts1name
 	call print
 	la a0, puts1data
-	li a1, PUTS_LOC
+	li a1, TMP_POS
 	call puts
 
-	li t1, PUTS_LOC
+	li t1, TMP_POS
 	lb t0, 0(t1)
 	li t1, 'h'
 	mv a0, t0
@@ -58,10 +59,10 @@ zerostr: .string "0"
 	la a0, puts2name
 	call print
 	la a0, puts2data
-	li a1, PUTS_LOC
+	li a1, TMP_POS
 	call puts
 
-	li t1, PUTS_LOC
+	li t1, TMP_POS
 	lb t0, 0(t1)
 	li t1, 'a'
 	mv a0, t0
@@ -127,23 +128,33 @@ zerostr: .string "0"
 	mv a1, t0
 	call test_eq
 
-# TEST: test_eq_str
-	la a0, test_eq_mem1name
+# TEST: memcmp
+	la a0, memcmp1name
 	call print
-	la a0, test_eq_mem1data
-	la a1, test_eq_mem1data
+	la a0, memcmp1data
+	la a1, memcmp1data
 	li a2, 5
-	call check_eq_mem
+	call memcmp
 	mv a1, zero
 	call test_eq
 
-# TEST: test_eq_str
-	la a0, test_eq_mem2name
+	la a0, memcmp2name
 	call print
-	la a0, test_eq_mem1data
-	la a1, test_eq_mem2data
+	la a0, memcmp1data
+	la a1, memcmp2data
 	li a2, 5
-	call check_eq_mem
+	call memcmp
+	mv a1, zero
+	call test_neq
+
+# memcpy
+	la a0, memcpy1name
+	call print
+	la a0, memcmp1data
+	li a1, TMP_POS
+	li a2, 7
+	call memcpy
+	call memcmp
 	mv a1, zero
 	call test_neq
 
@@ -156,7 +167,7 @@ zerostr: .string "0"
 	la a0, twelvestr
 	li a1, 0x87000000
 	li a2, 3
-	call check_eq_mem
+	call memcmp
 	mv a1, zero
 	call test_eq
 
@@ -169,7 +180,7 @@ zerostr: .string "0"
 	la a0, negtwelvestr
 	li a1, 0x87000000
 	li a2, 4
-	call check_eq_mem
+	call memcmp
 	mv a1, zero
 	call test_eq
 
@@ -182,7 +193,7 @@ zerostr: .string "0"
 	la a0, zerostr
 	li a1, 0x87000000
 	li a2, 2
-	call check_eq_mem
+	call memcmp
 	mv a1, zero
 	call test_eq
 

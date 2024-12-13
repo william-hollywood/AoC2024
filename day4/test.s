@@ -177,7 +177,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	li a0, TMP_ARR
 	la a1, move_delta_to_str1check
 	mv a2, a4 # str len
-	call check_eq_mem
+	call memcmp
 	li a1, 0
 	call test_eq
 
@@ -195,7 +195,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	li a0, TMP_ARR
 	la a1, move_delta_to_str2check
 	mv a2, a4 # str len
-	call check_eq_mem
+	call memcmp
 	li a1, 0
 	call test_eq
 
@@ -213,7 +213,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	li a0, TMP_ARR
 	la a1, move_delta_to_str3check
 	mv a2, a4 # str len
-	call check_eq_mem
+	call memcmp
 	li a1, 0
 	call test_eq
 
@@ -231,7 +231,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	li a0, TMP_ARR
 	la a1, move_delta_to_str4check
 	mv a2, a4 # str len
-	call check_eq_mem
+	call memcmp
 	li a1, 0
 	call test_eq
 
@@ -249,7 +249,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	li a0, TMP_ARR
 	la a1, move_delta_to_str5check
 	mv a2, a4 # str len
-	call check_eq_mem
+	call memcmp
 	li a1, 0
 	call test_eq
 
@@ -267,7 +267,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	li a0, TMP_ARR
 	la a1, move_delta_to_str6check
 	mv a2, a4 # str len
-	call check_eq_mem
+	call memcmp
 	li a1, 0
 	call test_eq
 
@@ -285,7 +285,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	li a0, TMP_ARR
 	la a1, move_delta_to_str7check
 	mv a2, a4 # str len
-	call check_eq_mem
+	call memcmp
 	li a1, 0
 	call test_eq
 
@@ -303,7 +303,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example: "
 	li a0, TMP_ARR
 	la a1, move_delta_to_str8check
 	mv a2, a4 # str len
-	call check_eq_mem
+	call memcmp
 	li a1, 0
 	call test_eq
 
@@ -501,7 +501,7 @@ test_parse_input_file:
 	lw t0, 12(sp)
 	lw t1, 20(sp)
 	mul a2, t0, t1
-	call check_eq_mem
+	call memcmp
 	mv a1, zero
 	call test_eq
 

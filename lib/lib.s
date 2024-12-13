@@ -59,29 +59,53 @@ print:
 	addi sp, sp, 16
 	ret
 
-# check_eq_mem - Compare two memory region with length a2
+# memcmp - Compare two memory region with length a2
 # a0 - mem address 1
 # a1 - mem address 2
 # a2 - length of memory to compare
-.global check_eq_mem
-check_eq_mem:
+# returns
+# a0 - number of bytes different
+.global memcmp
+memcmp:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 	li t0, 0
 	mv t1, a2
-.L_check_eq_mem_compare_byte:
-	beqz t1, .L_check_eq_mem_exit
+.L_memcmp_compare_byte:
+	beqz t1, .L_memcmp_exit
 	lb t2, (a0)
 	lb t3, (a1)
-	beq t2, t3, .L_check_eq_mem_inc
+	beq t2, t3, .L_memcmp_inc
 	addi t0, t0, 1
-.L_check_eq_mem_inc:
+.L_memcmp_inc:
 	addi a0, a0, 1
 	addi a1, a1, 1
 	addi t1, t1, -1
-	j .L_check_eq_mem_compare_byte
-.L_check_eq_mem_exit:
+	j .L_memcmp_compare_byte
+.L_memcmp_exit:
 	mv a0, t0
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
+
+# memcpy - Copy memory region a0 to a1 for a2 bytes
+# a0 - mem address 1
+# a1 - mem address 2
+# a2 - length of memory to copy
+.global memcpy
+memcpy:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+	mv t0, a2
+.L_memcpy_copy_byte:
+	beqz t0, .L_memcpy_exit
+	lb t1, (a0)
+	sb t1, (a1)
+	addi a0, a0, 1
+	addi a1, a1, 1
+	addi t0, t0, -1
+	j .L_memcpy_copy_byte
+.L_memcpy_exit:
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret

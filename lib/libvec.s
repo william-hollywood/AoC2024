@@ -10,8 +10,11 @@ vec_get:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 	# current size * item size
-	# +
-	# vector base + 4 (word size)
+	mul t0, a1, a2
+	# + vector base + 4 (word size)
+	add t0, t0, a0
+	addi t0, t0, 4
+	mv a0, t0
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
@@ -24,9 +27,23 @@ vec_get:
 vec_push:
 	addi sp, sp, -16
 	sw ra, 0(sp)
-	# get position of next empty space
 	# vec_get current size plus one
 	# copy item into new pos
+	lw t0, 0(a0) # len
+	addi t0, t0, 1
+	sw t0, 0(a0)
+	sw t0, 4(sp) # len to insert at
+	# get position of next empty space
+	mul t0, t0, a2 # offset from vec data
+	add t0, t0, a0
+	addi t0, t0, 4 # end pos
+	# t0 is pos to insert at
+	mv a0, a1
+	mv a1, t0
+	# a2 already len to copy
+	call memcpy
+
+	lw a0, 4(sp)
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret

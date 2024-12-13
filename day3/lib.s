@@ -21,7 +21,7 @@ read_until_valid_mul:
 	mv a3, a0
 	la a1, mul_str
 	la a2, 4
-	call check_eq_mem
+	call memcmp
 	mv t0, a0
 	mv a0, a3
 	bnez t0, .L_check_toggle
@@ -33,7 +33,7 @@ read_until_valid_mul:
 	mv a3, a0
 	la a1, do_str
 	la a2, 4
-	call check_eq_mem
+	call memcmp
 	bnez a0, .L_check_dont
 	li s1, 0
 	j .L_toggled
@@ -41,7 +41,7 @@ read_until_valid_mul:
 	mv a0, a3
 	la a1, dont_str
 	la a2, 7
-	call check_eq_mem
+	call memcmp
 	bnez a0, .L_toggled
 	li s1, 1
 .L_toggled:

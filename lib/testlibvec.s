@@ -39,9 +39,9 @@ test_libvec:
 	li t0, TEST_VEC
 	li t1, 8
 	sw t1, 0(t0)
-	li t1, 0x01020304
+	li t1, 0x04030201
 	sw t1, 4(t0)
-	li t1, 0x05060708
+	li t1, 0x08070605
 	sw t1, 8(t0)
 
 	la a0, vec_get1_1name
@@ -70,26 +70,26 @@ test_libvec:
 
 	la a0, vec_get2_1name
 	li a1, 0
-	li a2, 1
-	li a3, 0x0102
+	li a2, 2
+	li a3, 0x0201
 	call test_vec_get
 
 	la a0, vec_get2_2name
 	li a1, 1
-	li a2, 1
-	li a3, 0x0304
+	li a2, 2
+	li a3, 0x0403
 	call test_vec_get
 
 	la a0, vec_get2_3name
 	li a1, 2
-	li a2, 1
-	li a3, 0x0506
+	li a2, 2
+	li a3, 0x0605
 	call test_vec_get
 
 	la a0, vec_get2_4name
 	li a1, 3
-	li a2, 1
-	li a3, 0x0708
+	li a2, 2
+	li a3, 0x0807
 	call test_vec_get
 
 # TEST vec_get4/8/12
@@ -259,7 +259,6 @@ test_libvec:
 	li t0, TEST_VEC
 	li t1, 0
 	sw t1, 0(t0)
-
 	li t0, 0x30313233
 	sw t0, 4(sp)
 	li t0, 0x34353637
@@ -298,22 +297,30 @@ test_vec_get:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
+	sw a1, 4(sp)
+	sw a2, 8(sp)
+	sw a3, 12(sp)
 	call print
+
 	li a0, TEST_VEC
+	lw a1, 4(sp)
+	lw a2, 8(sp)
 	call vec_get
 	li t0, 4
-	blt a2, t0, .L_test_vec_get_h
+	lw t1, 8(sp)
+	blt t1, t0, .L_test_vec_get_h
 	lw a0, 0(a0)
 	j .L_test_vec_get_end
 .L_test_vec_get_h:
 	li t0, 2
-	bne a2, t0, .L_test_vec_get_b
+	bne t1, t0, .L_test_vec_get_b
 	lh a0, 0(a0)
 	j .L_test_vec_get_end
 .L_test_vec_get_b:
 	lb a0, 0(a0)
 .L_test_vec_get_end:
-	mv a1, a3
+	lw t0, 12(sp)
+	mv a1, t0
 	call test_eq
 
 	lw ra, 0(sp)
@@ -335,9 +342,12 @@ test_vec_push:
 	call print
 
 	li a0, TEST_VEC
+	lw a1, 4(sp)
+	lw a2, 8(sp)
 	call vec_push
 
 	li a0, TEST_VEC
+	lw a0, 0(a0)
 	mv a1, a3
 	bne a0, a1, .L_test_vec_push_fail
 
@@ -349,7 +359,8 @@ test_vec_push:
 
 	lw a1, 4(sp)
 	lw a2, 12(sp)
-	call check_eq_mem
+bp:
+	call memcmp
 
 	li a1, 0
 	call test_eq
