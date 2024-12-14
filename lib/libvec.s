@@ -178,6 +178,8 @@ vec_find:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
+	li a0, -1
+
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret

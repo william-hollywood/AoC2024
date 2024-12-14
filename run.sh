@@ -62,7 +62,7 @@ OBJ_FILES=("lib/lib.o" "lib/libvec.o")
 if [ "${TEST}" == "y" ];
 then
 	OBJ_FILES+=("${TARGET}/test.o" "lib/libtest.o" "lib/testlibvec.o")
-	LIBVEC_FILES=("lib/testlibvec.s" "lib/testlibvec_at.s" "lib/testlibvec_push.s" "lib/testlibvec_insert.s" "lib/testlibvec_remove.s")
+	LIBVEC_FILES=("lib/testlibvec.s" "lib/testlibvec_at.s" "lib/testlibvec_push.s" "lib/testlibvec_insert.s" "lib/testlibvec_remove.s" "lib/testlibvec_find.s")
 	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "${TARGET}/test.s" -o "${TARGET}/test.o"
 	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "lib/libtest.s" -o "lib/libtest.o"
 	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "${LIBVEC_FILES[@]}" -o "lib/testlibvec.o"

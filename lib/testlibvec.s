@@ -10,6 +10,7 @@ test_libvec:
 	call test_libvec_push
 	call test_libvec_insert
 	call test_libvec_remove
+	call test_libvec_find
 
 	lw ra, 0(sp)
 	addi sp, sp, 96
