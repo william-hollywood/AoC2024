@@ -78,7 +78,7 @@ vec_insert:
 	sw t1, 0(a0)
 	lw t1, 12(sp)
 	beq t0, t1, .L_vec_insert_exit # if insert len is the end, skip moving items
-
+bp:
 	# vec_get position of new end
 	lw a1, 0(a0)
 	addi a1, a1, 1
@@ -116,9 +116,9 @@ vec_insert:
 
 # vec_remove - remove from a vector
 # a0 - vector_base pos
-# a1 - address to place item at
+# a1 - address to place removed item at
 # a2 - position of removed item
-# a2 - item size
+# a3 - item size
 .global vec_remove
 vec_remove:
 	addi sp, sp, -16
