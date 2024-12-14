@@ -28,6 +28,23 @@ vec_push8_2name: .string "vec_push - size 8 contains item: "
 vec_push12_1name: .string "vec_push - size 12 initially empty: "
 vec_push12_2name: .string "vec_push - size 12 contains item: "
 
+vec_insert1_1name: .string "vec_insert - size 1 insert at start: "
+vec_insert1_2name: .string "vec_insert - size 1 insert at end: "
+vec_insert1_3name: .string "vec_insert - size 1 insert in middle: "
+vec_insert2_1name: .string "vec_insert - size 2 insert at start: "
+vec_insert2_2name: .string "vec_insert - size 2 insert at end: "
+vec_insert2_3name: .string "vec_insert - size 2 insert in middle: "
+vec_insert4_1name: .string "vec_insert - size 4 insert at start: "
+vec_insert4_2name: .string "vec_insert - size 4 insert at end: "
+vec_insert4_3name: .string "vec_insert - size 4 insert in middle: "
+vec_insert4_4name: .string "vec_insert - size 4 insert in middle again: "
+vec_insert8_1name: .string "vec_insert - size 8 insert at start: "
+vec_insert8_2name: .string "vec_insert - size 8 insert at end: "
+vec_insert8_3name: .string "vec_insert - size 8 insert in middle: "
+vec_insert12_1name: .string "vec_insert - size 12 insert at start: "
+vec_insert12_2name: .string "vec_insert - size 12 insert at end: "
+vec_insert12_3name: .string "vec_insert - size 12 insert in middle: "
+
 .section .lib
 .global test_libvec
 test_libvec:
@@ -285,6 +302,22 @@ test_libvec:
 	li a3, 2
 	call test_vec_push
 
+# TEST vec_insert
+	# Set len to zero
+	li t0, TEST_VEC
+	li t1, 0
+	sw t1, 0(t0)
+
+	li t0, 1
+	sb t0, 4(sp)
+	la a0, vec_insert1_1name
+	mv a1, sp
+	addi a1, a1, 4
+	li a2, 0
+	li a3, 1
+	li a4, 1
+	call test_vec_insert
+
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
@@ -371,4 +404,53 @@ test_vec_push:
 .L_test_vec_push_end:
 	lw ra, 0(sp)
 	addi sp, sp, 16
+	ret
+
+# a0 - name
+# a1 - data addr to insert
+# a2 - position to insert at
+# a3 - item size
+# a4 - expected len
+test_vec_insert:
+	addi sp, sp, -32
+	sw ra, 0(sp)
+
+	sw a1, 4(sp)
+	sw a2, 8(sp)
+	sw a3, 12(sp)
+	sw a4, 16(sp)
+	call print
+
+	li a0, TEST_VEC
+	lw a1, 4(sp)
+	lw a2, 8(sp)
+	call vec_insert
+
+	# test new len
+	li a0, TEST_VEC
+	lw a0, 0(a0)
+	mv a1, a3
+	bne a0, a1, .L_test_vec_insert_fail
+
+bpx:
+	li a0, TEST_VEC
+	lw a1, 8(sp)
+	lw a2, 12(sp)
+	call vec_get
+
+	lw a1, 4(sp)
+	lw a2, 12(sp)
+	call memcmp
+
+	li a1, 0
+	call test_eq
+	j .L_test_vec_insert_end
+.L_test_vec_insert_fail:
+	li a0, 0
+	li a1, 1
+	call test_eq
+.L_test_vec_insert_end:
+
+	lw ra, 0(sp)
+	addi sp, sp, 32
 	ret
