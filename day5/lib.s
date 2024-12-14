@@ -85,19 +85,45 @@ _parse_page_list_exit:
 # a0 - 1 if the rule is met, 0 otherwise
 .global process_rule
 process_rule:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
 
+	sw a0, 4(sp)
+	sw a1, 8(sp)
+	sw a2, 12(sp)
+
 	# get position of page 1 in PAGE_LIST_VEC
+	lw a0, 12(sp)
+	mv a1, sp
+	addi a1, a1, 4
+	li a2, 4
+	call vec_find
+	sw a0, 16(sp)
 	# get position of page 2 in PAGE_LIST_VEC
+	lw a0, 12(sp)
+	mv a1, sp
+	addi a1, a1, 8
+	li a2, 4
+	call vec_find
+	sw a0, 20(sp)
 
-	# if both pages exist and 1_pos < 2_pos return 1
-	# else return 0
+	# check if both pages exist in page list
+	li t0, -1
+	lw t1, 16(sp)
+	beq t0, t1, .L_process_rule_pass
+	lw t2, 20(sp)
+	beq t0, t2, .L_process_rule_pass
+	# check 1_pos < 2_pos return 1
+	bgt t1, t2, .L_process_rule_fail
+.L_process_rule_pass:
+	li a0, 1
+	j .L_process_rule_exit
+.L_process_rule_fail:
+	li a0, 0
 
-	mv a0, zero
-
+.L_process_rule_exit:
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret
 
 # process_single_page - process a single page and evaluate the rules of it
