@@ -1,23 +1,44 @@
 .section .lib
-.equ RULE_VEC, 0x84000000
-.equ PAGE_LIST_VEC, 0x84800000
-
 # parse_all_rules - parse all the rules in the input until a double newline
 # a0 - buffer pos
 # a1 - RULE_VEC pos
+# returns
+# a0 - addr of next char after double newline
 .global parse_all_rules
 parse_all_rules:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
-	# top:
-	# if char is newline, exit
+
+	sw a1, 4(sp)
+_parse_all_rules_loop:
 	# do a stoi,
+	call stoi
+	sw a0, 12(sp)
+	mv a0, a1
+
 	# skip | char
+	addi a0, a0, 1
 	# do a stoi
+	call stoi
+	sw a0, 16(sp)
+	sw a1, 8(sp)
 	# push to RULE_VEC
+	lw a0, 4(sp)
+	mv a1, sp
+	addi a1, a1, 12
+	li a2, 8
+	call vec_push
 	# skip current char (newline) and jump to top
+	lw a0, 8(sp)
+	addi a0, a0, 1
+	# if char not newline, repeat
+	lb t0, 0(a0)
+	li t1, '\n'
+	bne t0, t1, _parse_all_rules_loop
+
+	addi a0, a0, 1 # skip new double newline
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret
 
 # parse_page_list - parse a list of pages and creating a vector of the result
