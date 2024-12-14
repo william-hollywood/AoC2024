@@ -175,11 +175,45 @@ vec_remove:
 # a0 - position of item or -1 if not found
 .global vec_find
 vec_find:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
 
-	li a0, -1
+	sw a0, 4(sp)
+	sw a1, 8(sp)
+	sw a2, 12(sp)
 
+	sw zero, 16(sp) # start search pos
+	lw t0, 0(a0) # number of items
+	beqz t0, .L_vec_find_not_found # not found if len is zero
+	sw t0, 20(sp) # end num
+
+.L_vec_find_loop:
+	# check if mem at 16(sp) matches 8(sp)
+	lw a0, 4(sp)
+	lw a1, 16(sp)
+	lw a2, 12(sp)
+	call vec_at
+	lw a1, 8(sp)
+bp:
+	call memcmp
+	# if it does goto .L_vec_find_found
+	beqz a0, .L_vec_find_found
+
+	# otherwise, check if end of vec
+	lw t0, 16(sp)
+	lw t1, 20(sp)
+	beq t0, t1, .L_vec_find_not_found
+	# increment and repeat
+	addi t0, t0, 1
+	sw t0, 16(sp)
+	j .L_vec_find_loop
+
+.L_vec_find_not_found:
+	li a0, -1
+	j .L_vec_find_exit
+.L_vec_find_found:
+	lw a0, 16(sp)
+.L_vec_find_exit:
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret

@@ -44,6 +44,7 @@ test_libvec_find:
 	li a2, 2 # expected return pos
 	li a3, 4 # item size
 	li t0, 3 # data to look for
+	sw t0, 28(sp)
 	call test_vec_find
 
 	la a0, vec_find3_name
@@ -51,6 +52,7 @@ test_libvec_find:
 	li a2, 4 # expected return pos
 	li a3, 4 # item size
 	li t0, 5 # data to look for
+	sw t0, 28(sp)
 	call test_vec_find
 
 	la a0, vec_find4_name
@@ -58,6 +60,7 @@ test_libvec_find:
 	li a2, -1 # expected return pos
 	li a3, 4 # item size
 	li t0, 6 # data to look for
+	sw t0, 28(sp)
 	call test_vec_find
 
 	lw ra, 0(sp)
