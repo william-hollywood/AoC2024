@@ -72,40 +72,43 @@ vec_insert:
 	call vec_get
 	sw a0, 20(sp)
 
-	# vec_get position of end
 	lw a0, 4(sp)
+	lw t0, 0(a0)
+	addi t1, t0, 1
+	sw t1, 0(a0)
+	lw t1, 12(sp)
+	beq t0, t1, .L_vec_insert_exit # if insert len is the end, skip moving items
+
+	# vec_get position of new end
 	lw a1, 0(a0)
+	addi a1, a1, 1
 	lw a2, 16(sp)
 	call vec_get
 	sw a0, 24(sp) # pos of end
 
 .L_vec_insert_move_item:
-	# iterate backwards until a1
-	lw t0, 24(sp)
-	lw t1, 20(sp)
+	lw t0, 20(sp)
+	lw t1, 24(sp)
 	beq t0, t1, .L_vec_insert_exit
+
+	# iterate backwards until a1
+	lw a0, 24(sp)
+	lw a1, 24(sp)
+	lw a2, 16(sp)
+	sub a0, a0, a2
+	call memcpy
 
 	lw t0, 24(sp)
 	lw t1, 16(sp)
 	sub t1, t0, t1
 	sw t1, 24(sp)
-
-	mv a0, t0
-	mv a1, t1
-	lw a2, 16(sp)
-	call memcpy
-
 	j .L_vec_insert_move_item
-.L_vec_insert_exit:
 
+.L_vec_insert_exit:
 	lw a0, 8(sp)
 	lw a1, 20(sp)
 	lw a2, 16(sp)
 	call memcpy
-	lw a0, 4(sp)
-	lw t0, 0(a0)
-	addi t0, t0, 1
-	sw t0, 0(a0)
 
 	lw ra, 0(sp)
 	addi sp, sp, 32
