@@ -48,12 +48,31 @@ _parse_all_rules_loop:
 parse_page_list:
 	addi sp, sp, -16
 	sw ra, 0(sp)
+
+	sw a1, 4(sp)
 	# top:
-	# if char is newline, exit
+_parse_page_list_loop:
 	# do a stoi
+	call stoi
+	sw a0, 12(sp)
+	sw a1, 8(sp)
 	# push to PAGE_LIST_VEC
-	# if char is ',' skip it
+	lw a0, 4(sp)
+	mv a1, sp
+	addi a1, a1, 12
+	li a2, 4
+	call vec_push
+	# if char is newline, exit
+	lw a0, 8(sp)
+	lb t0, 0(a0)
+	li t1, '\n'
+	beq t0, t1, _parse_page_list_exit
+	addi a0, a0, 1 # skip comma
 	# jump to top
+	j _parse_page_list_loop
+_parse_page_list_exit:
+	addi a0, a0, 1 # skip newline
+
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
