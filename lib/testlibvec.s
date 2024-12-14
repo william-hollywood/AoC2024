@@ -364,7 +364,6 @@ test_libvec:
 	addi a1, a1, 4
 	li a2, 7
 	call memcmp
-bp:
 	li a1, 0
 	call test_eq
 
@@ -493,7 +492,7 @@ bp:
 # TEST vec_remove
 	# Setup vec
 	li t0, TEST_VEC
-	li t1, 4
+	li t1, 5
 	sw t1, 0(t0)
 	li t1, 1
 	sb t1, 4(t0)
@@ -505,7 +504,8 @@ bp:
 	sb t1, 7(t0)
 	li t1, 5
 	sb t1, 8(t0)
-
+	li t1, 6
+	sb t1, 9(t0)
 	la a0, vec_remove1_1name
 	mv a1, sp
 	addi a1, a1, 16 # put data at 16(sp)
@@ -541,14 +541,13 @@ bp:
 	li t0, 3
 	sb t0, 0(a5) # expected data is 1 byte
 	call test_vec_remove
-
 	# Check it's all as expected
 	li t0, 2
 	sw t0, 4(sp)
 	li t0, 2
-	sb t0, 5(sp)
+	sb t0, 8(sp)
 	li t0, 4
-	sb t0, 6(sp)
+	sb t0, 9(sp)
 	la a0, vec_remove1_4name
 	call print
 	li a0, TEST_VEC
@@ -702,7 +701,7 @@ test_vec_insert:
 # a4 - expected len
 # a5 - expected data returned
 test_vec_remove:
-	addi sp, sp, -48
+	addi sp, sp, -32
 	sw ra, 0(sp)
 
 	sw a1, 4(sp)
@@ -713,10 +712,10 @@ test_vec_remove:
 	call print
 
 	li a0, TEST_VEC
-	lw a1, 4(sp)
-	mv a2, sp
-	addi a2, a2, 24
-	lw a3, 8(sp)
+	mv a1, sp
+	addi a1, a1, 24
+	lw a2, 8(sp)
+	lw a3, 12(sp)
 	call vec_remove
 
 	# test new len
@@ -741,5 +740,5 @@ test_vec_remove:
 .L_test_vec_remove_end:
 
 	lw ra, 0(sp)
-	addi sp, sp, 48
+	addi sp, sp, 32
 	ret

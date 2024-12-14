@@ -78,7 +78,6 @@ vec_insert:
 	sw t1, 0(a0)
 	lw t1, 12(sp)
 	beq t0, t1, .L_vec_insert_exit # if insert len is the end, skip moving items
-bp:
 	# vec_get position of new end
 	lw a1, 0(a0)
 	addi a1, a1, 1
@@ -114,21 +113,55 @@ bp:
 	addi sp, sp, 32
 	ret
 
-# vec_remove - remove from a vector
+# vec_remove - remove from a vector, store result in a1
 # a0 - vector_base pos
-# a1 - address to place removed item at
+# a1 - address to place removed item at (ignored if x0)
 # a2 - position of removed item
 # a3 - item size
 .global vec_remove
 vec_remove:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
-	# cursor = a1
-	# iterate until end of vec
-	# if at end of vec exit
-	# vec_get position of cursor
-	# move cusor + 1 into current
-	# repeat
+
+	sw a0, 4(sp)
+	sw a1, 8(sp)
+	sw a2, 12(sp)
+	sw a3, 16(sp)
+
+	# vec_get position of a1
+	lw a1, 12(sp)
+	lw a2, 16(sp)
+	call vec_get
+	sw a0, 20(sp)
+
+	lw a1, 8(sp)
+	lw a2, 16(sp)
+	call memcpy
+
+	lw a0, 4(sp)
+	lw t0, 0(a0)
+	addi t1, t0, -1
+	sw t1, 0(a0)
+	lw t1, 12(sp)
+	beq t0, t1, .L_vec_remove_exit # if remove pos is the end, skip moving items
+	# vec_get position of new end
+	mv a1, t0
+	lw a2, 16(sp)
+	call vec_get
+	sw a0, 24(sp) # pos of end
+.L_vec_remove_move_item:
+	# iterate until at end
+	lw a0, 20(sp)
+	lw a1, 20(sp)
+	lw a2, 16(sp)
+	add a0, a0, a2
+	sw a0, 20(sp)
+	lw t1, 24(sp)
+	beq a0, t1, .L_vec_remove_exit
+	call memcpy
+	j .L_vec_remove_move_item
+.L_vec_remove_exit:
+
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret
