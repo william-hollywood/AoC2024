@@ -1,12 +1,12 @@
 .section .lib
-# vec_get - get address of item from a vector
+# vec_at - get address of item from a vector
 # a0 - vector_base pos
 # a1 - position item to get
 # a2 - item size
 # Returns
 # a0 - position of VEC[POS]
-.global vec_get
-vec_get:
+.global vec_at
+vec_at:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 	# current size * item size
@@ -29,7 +29,7 @@ vec_get:
 vec_push:
 	addi sp, sp, -16
 	sw ra, 0(sp)
-	# vec_get current size plus one
+	# vec_at current size plus one
 	# copy item into new pos
 	lw t0, 0(a0) # len
 	addi t1, t0, 1
@@ -65,11 +65,11 @@ vec_insert:
 	sw a2, 12(sp)
 	sw a3, 16(sp)
 
-	# vec_get position of a1
+	# vec_at position of a1
 	lw a0, 4(sp)
 	lw a1, 12(sp)
 	lw a2, 16(sp)
-	call vec_get
+	call vec_at
 	sw a0, 20(sp)
 
 	lw a0, 4(sp)
@@ -78,11 +78,11 @@ vec_insert:
 	sw t1, 0(a0)
 	lw t1, 12(sp)
 	beq t0, t1, .L_vec_insert_exit # if insert len is the end, skip moving items
-	# vec_get position of new end
+	# vec_at position of new end
 	lw a1, 0(a0)
 	addi a1, a1, 1
 	lw a2, 16(sp)
-	call vec_get
+	call vec_at
 	sw a0, 24(sp) # pos of end
 
 .L_vec_insert_move_item:
@@ -128,10 +128,10 @@ vec_remove:
 	sw a2, 12(sp)
 	sw a3, 16(sp)
 
-	# vec_get position of a1
+	# vec_at position of a1
 	lw a1, 12(sp)
 	lw a2, 16(sp)
-	call vec_get
+	call vec_at
 	sw a0, 20(sp)
 
 	lw a1, 8(sp)
@@ -144,10 +144,10 @@ vec_remove:
 	sw t1, 0(a0)
 	lw t1, 12(sp)
 	beq t0, t1, .L_vec_remove_exit # if remove pos is the end, skip moving items
-	# vec_get position of new end
+	# vec_at position of new end
 	mv a1, t0
 	lw a2, 16(sp)
-	call vec_get
+	call vec_at
 	sw a0, 24(sp) # pos of end
 .L_vec_remove_move_item:
 	# iterate until at end
