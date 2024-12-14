@@ -1,8 +1,13 @@
 .section .data
 parse_all_rulesdata: .string "12|34\n56|78\n91|23\n\nS" # 'S' used to check what char we return
 parse_all_rules1name: .string "parse_all_rules - loads page number rules into vector: "
+
 parse_page_listdata: .string "12,34,56,78,90\nS" # see above
 parse_page_list1name: .string "parse_all_rules - loads page numbers from line into vector: "
+
+process_rule1_name: .string "process rule - ensure p1 comes before p2: "
+process_rule2_name: .string "process rule - fail if p2 comes before p1: "
+process_rule3_name: .string "process rule - rule ignored if page not found: "
 
 .equ TMP_VEC, 0x83800000
 .equ RULE_VEC, 0x84000000
@@ -81,6 +86,50 @@ _parse_all_rules_fail:
 _parse_page_list_fail:
 	li a1, 0
 	call test_eq
+
+# TEST process_rule
+	# Setup PAGE_LIST_VEC
+	li t0, PAGE_LIST_VEC
+	li t1, 5
+	sw t1, 0(t0) # len 5
+	li t1, 11
+	sw t1, 4(t0)
+	li t1, 22
+	sw t1, 8(t0)
+	li t1, 33
+	sw t1, 12(t0)
+	li t1, 44
+	sw t1, 16(t0)
+	li t1, 55
+	sw t1, 20(t0)
+
+	la a0, process_rule1_name
+	call print
+	li a0, 11
+	li a1, 55
+	li a2, PAGE_LIST_VEC
+	call process_rule
+	li a1, 1
+	call test_eq
+
+	la a0, process_rule2_name
+	call print
+	li a0, 44
+	li a1, 22
+	li a2, PAGE_LIST_VEC
+	call process_rule
+	li a1, 0
+	call test_eq
+
+	la a0, process_rule3_name
+	call print
+	li a0, 33
+	li a1, 66
+	li a2, PAGE_LIST_VEC
+	call process_rule
+	li a1, 1
+	call test_eq
+
 
 	addi sp, sp, 16
 # Print end

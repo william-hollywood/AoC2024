@@ -93,6 +93,9 @@ process_rule:
 
 	# if both pages exist and 1_pos < 2_pos return 1
 	# else return 0
+
+	mv a0, zero
+
 	lw ra, 0(sp)
 	addi sp, sp, 16
 	ret
