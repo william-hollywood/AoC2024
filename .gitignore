@@ -1,4 +1,5 @@
 *.o
 *.bin
 *.txt
+*.log
 .running

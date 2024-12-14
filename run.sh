@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 # Ubuntu 20.04 binaries from the github only had 32 bit
 if lsb_release -d | grep 20.04;
@@ -15,10 +15,13 @@ printhelp () {
 TARGET="$1"
 shift
 
-while getopts 'dtf:' OPTION; do
+while getopts 'vdtf:' OPTION; do
 	case "$OPTION" in
 	d)
 		DEBUG="y"
+		;;
+	v)
+		set -x
 		;;
 	t)
 		TEST="y"
@@ -59,9 +62,10 @@ OBJ_FILES=("lib/lib.o" "lib/libvec.o")
 if [ "${TEST}" == "y" ];
 then
 	OBJ_FILES+=("${TARGET}/test.o" "lib/libtest.o" "lib/testlibvec.o")
+	LIBVEC_FILES=("lib/testlibvec.s" "lib/testlibvec_at.s" "lib/testlibvec_push.s" "lib/testlibvec_insert.s" "lib/testlibvec_remove.s")
 	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "${TARGET}/test.s" -o "${TARGET}/test.o"
 	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "lib/libtest.s" -o "lib/libtest.o"
-	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "lib/testlibvec.s" -o "lib/testlibvec.o"
+	"${RV}"-unknown-elf-as -march=rv32im -mabi=ilp32 "${LIBVEC_FILES[@]}" -o "lib/testlibvec.o"
 fi
 
 if [ ! "$TARGET" = "lib" ];
@@ -93,15 +97,30 @@ then
 	echo "${RUN_BIN}" > "${RUNNING_FILE_FILE}"
 fi
 
-if [ "${FILE_CONTENT}" != "" ];
+{
+	if [ "${FILE_CONTENT}" != "" ];
+	then
+		printf "%s\0" "${FILE_CONTENT}" | qemu-system-riscv32 -nographic "${ARGS[@]}" -serial mon:stdio -machine virt -bios "${RUN_BIN}"
+	else
+		qemu-system-riscv32 -nographic "${ARGS[@]}" -serial mon:stdio -machine virt -bios "${RUN_BIN}"
+	fi
+} | tee "./.output.log"
+
+if [ "${TEST}" == "y" ];
 then
-	printf "%s\0" "${FILE_CONTENT}" | qemu-system-riscv32 -nographic "${ARGS[@]}" -serial mon:stdio -machine virt -bios "${RUN_BIN}"
-else
-	qemu-system-riscv32 -nographic "${ARGS[@]}" -serial mon:stdio -machine virt -bios "${RUN_BIN}"
+	if passed=$(grep "PASSED" "./.output.log");
+	then
+		echo "Total passed: $(echo -e "${passed}" | wc -l)"
+	fi
+	
+	if failed=$(grep "FAILED" "./.output.log");
+	then
+		echo "Total failed: $(echo -e "${failed}" | wc -l)"
+		echo "${failed}"
+	fi
 fi
 
 if [ "${DEBUG}" == "y" ];
 then
 	rm "${RUNNING_FILE_FILE}"
 fi
-echo "Done"

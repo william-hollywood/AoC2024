@@ -165,3 +165,19 @@ vec_remove:
 	lw ra, 0(sp)
 	addi sp, sp, 32
 	ret
+
+
+# vec_find - find the first entry in the vector that matches the search data
+# a0 - VEC base
+# a1 - addr of data to find
+# a2 - item size
+# returns
+# a0 - position of item or -1 if not found
+.global vec_find
+vec_find:
+	addi sp, sp, -16
+	sw ra, 0(sp)
+
+	lw ra, 0(sp)
+	addi sp, sp, 16
+	ret
