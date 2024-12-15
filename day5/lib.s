@@ -126,14 +126,15 @@ process_rule:
 	addi sp, sp, 32
 	ret
 
-# process_single_page - process a single page and evaluate the rules of it
+# process_single_page_list - process a single page and evaluate the rules of it
 # a0 - buffer pos
-# a0 - RULE_VEC pos
-# a1 - PAGE_LIST_VEC pos
+# a1 - RULE_VEC pos
+# a2 - PAGE_LIST_VEC pos
 # Returns
-# a0 - 0 if invalid list, middle page num if valid
-.global process_single_page
-process_single_page:
+# a0 - cursor to next char after pages
+# a1 - 0 if invalid list, middle page num if valid
+.global process_single_page_list
+process_single_page_list:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 	# parse_page_list
@@ -153,18 +154,18 @@ process_single_page:
 	addi sp, sp, 16
 	ret
 
-# process_pages - process all pages returning a sum of all of the middle pages of valid lists
-# a0 - RULE_VEC pos
-# a1 - PAGE_LIST_VEC pos
+# process_page_lists - process all pagelists returning a sum of all of the middle pages of valid lists
+# a0 - buffer pos
+# a1 - RULE_VEC pos
+# a2 - PAGE_LIST_VEC pos
 # Returns
 # a0 - sum of all of the middle pages of valid lists
-.global process_pages
-process_pages:
+.global process_page_lists
+process_page_lists:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
-	# for page in PAGE_LIST_VEC
-	# if end of PAGE_LIST_VEC, jump to end of loop
+	# loop until end of buffer
 	# process_single_page
 	# add return to sum
 	# jump to start of for
@@ -188,7 +189,7 @@ process_file:
 	sw ra, 0(sp)
 
 	# parse_all_rules
-	# parse_page_list
+	# process_page_lists
 	# process_pages
 	# return result of process_pages
 
