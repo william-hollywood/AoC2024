@@ -194,7 +194,6 @@ vec_find:
 	lw a2, 12(sp)
 	call vec_at
 	lw a1, 8(sp)
-bp:
 	call memcmp
 	# if it does goto .L_vec_find_found
 	beqz a0, .L_vec_find_found

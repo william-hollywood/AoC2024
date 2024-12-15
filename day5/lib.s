@@ -10,7 +10,7 @@ parse_all_rules:
 	sw ra, 0(sp)
 
 	sw a1, 4(sp)
-_parse_all_rules_loop:
+.L_parse_all_rules_loop:
 	# do a stoi,
 	call stoi
 	sw a0, 12(sp)
@@ -34,7 +34,7 @@ _parse_all_rules_loop:
 	# if char not newline, repeat
 	lb t0, 0(a0)
 	li t1, '\n'
-	bne t0, t1, _parse_all_rules_loop
+	bne t0, t1, .L_parse_all_rules_loop
 
 	addi a0, a0, 1 # skip new double newline
 	lw ra, 0(sp)
@@ -51,7 +51,7 @@ parse_page_list:
 
 	sw a1, 4(sp)
 	# top:
-_parse_page_list_loop:
+.L_parse_page_list_loop:
 	# do a stoi
 	call stoi
 	sw a0, 12(sp)
@@ -66,11 +66,11 @@ _parse_page_list_loop:
 	lw a0, 8(sp)
 	lb t0, 0(a0)
 	li t1, '\n'
-	beq t0, t1, _parse_page_list_exit
+	beq t0, t1, .L_parse_page_list_exit
 	addi a0, a0, 1 # skip comma
 	# jump to top
-	j _parse_page_list_loop
-_parse_page_list_exit:
+	j .L_parse_page_list_loop
+.L_parse_page_list_exit:
 	addi a0, a0, 1 # skip newline
 
 	lw ra, 0(sp)
@@ -135,23 +135,63 @@ process_rule:
 # a1 - 0 if invalid list, middle page num if valid
 .global process_single_page_list
 process_single_page_list:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
-	# parse_page_list
 
+	sw a0, 4(sp)
+	sw a1, 8(sp)
+	sw a2, 12(sp)
+
+	mv a1, a2
+	call parse_page_list
+	sw a0, 4(sp)
 	# for rule in rule list
-	# if end of RULE_VEC, jump end of loop
+	sw zero, 16(sp) # start at zero
+	lw t0, 12(sp)
+	lw t0, 0(t0)
+	sw t0, 20(sp) # loop until
+.L_process_single_page_list_loop:
+	lw a0, 8(sp)
+	lw a1, 16(sp)
+	li a2, 8
+	call vec_at
+	lw a0, 0(a0)
+	lw a1, 4(sp)
+	lw a2, 12(sp)
 	# process_rule
+	call process_rule
 	# if rule not met, return zero
-	# jump start of for
-	# end of loop:
+	beqz a0, .L_process_single_page_list_fail
+	lw t0, 16(sp)
+	addi t0, t0, 1
+	lw t1, 20(sp)
+	# if end of RULE_VEC, jump end of loop
+	beq t0, t1, .L_process_single_page_list_end_loop
+	sw t0, 16(sp)
+	# jump start of loop
+	j .L_process_single_page_list_loop
+.L_process_single_page_list_end_loop:
 
 	# get middle number from page list
+	lw a0, 8(sp)
+	lw t0, 12(sp)
 	# (PAGE_LIST_VEC-len / 2) + 1
+	lw a1, 0(t0)
+	li t0, 2
+	div a1, a1, t0
+	addi a1, a1, 1
+	li a2, 4
+	call vec_at
 	# return page num
+	lw a1, 0(a0)
+	j .L_process_single_page_list_exit
+.L_process_single_page_list_fail:
+	mv a1, zero
+.L_process_single_page_list_exit:
+	lw a0, 4(sp)
 
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret
 
 # process_page_lists - process all pagelists returning a sum of all of the middle pages of valid lists
