@@ -209,7 +209,6 @@ process_page_lists:
 	sw zero, 12(sp) # sum counter
 	addi a0, a0, -1
 .L_process_page_lists_loop:
-bp:
 	lb t0, 0(a0)
 	addi a0, a0, 1
 	lw a1, 4(sp)
@@ -239,10 +238,14 @@ process_file:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
-	# parse_all_rules
-	# process_page_lists
-	# process_pages
-	# return result of process_pages
+	sw a1, 4(sp)
+	sw a2, 8(sp)
+
+	call parse_all_rules
+
+	lw a1, 4(sp)
+	lw a2, 8(sp)
+	call process_page_lists
 
 	lw ra, 0(sp)
 	addi sp, sp, 16

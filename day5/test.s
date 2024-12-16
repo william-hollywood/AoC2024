@@ -19,6 +19,9 @@ process_single_page_list2name: .string "process_single_page_list - returns zero 
 process_page_listsdata: .string "11,22,33\n22,11,33\n44,55,66"
 process_page_listsname: .string "process_page_lists - returns sum of successful rows: "
 
+process_filedata: .string "11|22\n22|33\n\n11,22,33\n22,11,33\n44,55,66"
+process_filename: .string "process_file - file processed and evaluated: "
+
 .equ TMP_VEC, 0x83800000
 .equ RULE_VEC, 0x84000000
 .equ PAGE_LIST_VEC, 0x84800000
@@ -251,6 +254,18 @@ process_page_listsname: .string "process_page_lists - returns sum of successful 
 	li a1, RULE_VEC
 	li a2, PAGE_LIST_VEC
 	call process_page_lists
+	li a1, 77
+	call test_eq
+
+# TEST process_file
+
+	la a0, process_filename
+	call print
+
+	la a0, process_filedata
+	li a1, RULE_VEC
+	li a2, PAGE_LIST_VEC
+	call process_file
 	li a1, 77
 	call test_eq
 
