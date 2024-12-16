@@ -9,7 +9,7 @@ process_rule1_name: .string "process rule - ensure p1 comes before p2: "
 process_rule2_name: .string "process rule - fail if p2 comes before p1: "
 process_rule3_name: .string "process rule - rule ignored if page not found: "
 
-process_single_page_listdata: .string "11,22,33,44,55\n"
+process_single_page_listdata: .string "11,22,33,44,55\nS"
 process_single_page_list1name: .string "process_single_page_list - returns middle page if all rules pass: "
 process_single_page_list2name: .string "process_single_page_list - returns zero if any rule fails: "
 
@@ -157,8 +157,8 @@ _parse_page_list_fail:
 	li a2, PAGE_LIST_VEC
 	call process_single_page_list
 
-	lw t0, 0(a0)
-	li t1, '\n'
+	lb t0, 0(a0)
+	li t1, 'S'
 	bne t0, t1, 1f
 	li t0, 33
 	bne a1, t0, 1f
@@ -186,8 +186,8 @@ _parse_page_list_fail:
 	li a2, PAGE_LIST_VEC
 	call process_single_page_list
 
-	lw t0, 0(a0)
-	li t1, '\n'
+	lb t0, 0(a0)
+	li t1, 'S'
 	bne t0, t1, 1f
 	li t0, 0
 	bne a1, t0, 1f

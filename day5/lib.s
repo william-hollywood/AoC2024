@@ -49,6 +49,7 @@ parse_page_list:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
+	sw zero, 0(a1) # reset len to zero
 	sw a1, 4(sp)
 	# top:
 .L_parse_page_list_loop:
@@ -147,7 +148,7 @@ process_single_page_list:
 	sw a0, 4(sp)
 	# for rule in rule list
 	sw zero, 16(sp) # start at zero
-	lw t0, 12(sp)
+	lw t0, 8(sp)
 	lw t0, 0(t0)
 	sw t0, 20(sp) # loop until
 .L_process_single_page_list_loop:
@@ -155,8 +156,8 @@ process_single_page_list:
 	lw a1, 16(sp)
 	li a2, 8
 	call vec_at
+	lw a1, 4(a0)
 	lw a0, 0(a0)
-	lw a1, 4(sp)
 	lw a2, 12(sp)
 	# process_rule
 	call process_rule
@@ -173,13 +174,11 @@ process_single_page_list:
 .L_process_single_page_list_end_loop:
 
 	# get middle number from page list
-	lw a0, 8(sp)
-	lw t0, 12(sp)
+	lw a0, 12(sp)
 	# (PAGE_LIST_VEC-len / 2) + 1
-	lw a1, 0(t0)
+	lw a1, 0(a0)
 	li t0, 2
 	div a1, a1, t0
-	addi a1, a1, 1
 	li a2, 4
 	call vec_at
 	# return page num
