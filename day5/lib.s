@@ -68,6 +68,7 @@ parse_page_list:
 	lb t0, 0(a0)
 	li t1, '\n'
 	beq t0, t1, .L_parse_page_list_exit
+	beqz t0, .L_parse_page_list_exit
 	addi a0, a0, 1 # skip comma
 	# jump to top
 	j .L_parse_page_list_loop
@@ -203,13 +204,25 @@ process_page_lists:
 	addi sp, sp, -16
 	sw ra, 0(sp)
 
-	# loop until end of buffer
-	# process_single_page
-	# add return to sum
-	# jump to start of for
-	# end of loop:
+	sw a1, 4(sp)
+	sw a2, 8(sp)
+	sw zero, 12(sp) # sum counter
+	addi a0, a0, -1
+.L_process_page_lists_loop:
+bp:
+	lb t0, 0(a0)
+	addi a0, a0, 1
+	lw a1, 4(sp)
+	lw a2, 8(sp)
+	call process_single_page_list
+	lw t0, 12(sp)
+	add t0, t0, a1
+	sw t0, 12(sp)
+	lb t0, 0(a0)
+	bnez t0, .L_process_page_lists_loop
 
 	# return sum
+	lw a0, 12(sp)
 
 	lw ra, 0(sp)
 	addi sp, sp, 16
