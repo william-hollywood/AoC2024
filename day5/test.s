@@ -2,14 +2,14 @@
 parse_all_rulesdata: .string "12|34\n56|78\n91|23\n\nS" # 'S' used to check what char we return
 parse_all_rules1name: .string "parse_all_rules - loads page number rules into vector: "
 
-parse_page_listdata: .string "12,34,56,78,90\nS" # see above
+parse_page_listdata: .string "12,34,56,78,90\n" # see above
 parse_page_list1name: .string "parse_all_rules - loads page numbers from line into vector: "
 
 process_rule1_name: .string "process rule - ensure p1 comes before p2: "
 process_rule2_name: .string "process rule - fail if p2 comes before p1: "
 process_rule3_name: .string "process rule - rule ignored if page not found: "
 
-process_single_page_listdata: .string "11,22,33,44,55\nS"
+process_single_page_listdata: .string "11,22,33,44,55\n"
 process_single_page_list1name: .string "process_single_page_list - returns middle page if all rules pass: "
 process_single_page_list2name: .string "process_single_page_list - returns zero if any rule fails: "
 
@@ -66,7 +66,7 @@ process_single_page_list2name: .string "process_single_page_list - returns zero 
 	li a1, PAGE_LIST_VEC
 	call parse_page_list
 	lb t0, 0(a0)
-	li t1, 'S'
+	li t1, '\n'
 	bne t0, t1, _parse_page_list_fail
 
 	li t0, TMP_VEC
@@ -158,7 +158,7 @@ _parse_page_list_fail:
 	call process_single_page_list
 
 	lb t0, 0(a0)
-	li t1, 'S'
+	li t1, '\n'
 	bne t0, t1, 1f
 	li t0, 33
 	bne a1, t0, 1f
@@ -187,7 +187,7 @@ _parse_page_list_fail:
 	call process_single_page_list
 
 	lb t0, 0(a0)
-	li t1, 'S'
+	li t1, '\n'
 	bne t0, t1, 1f
 	li t0, 0
 	bne a1, t0, 1f

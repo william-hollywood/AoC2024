@@ -72,7 +72,6 @@ parse_page_list:
 	# jump to top
 	j .L_parse_page_list_loop
 .L_parse_page_list_exit:
-	addi a0, a0, 1 # skip newline
 
 	lw ra, 0(sp)
 	addi sp, sp, 16
