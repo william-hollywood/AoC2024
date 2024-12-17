@@ -185,6 +185,7 @@ vec_find:
 	sw zero, 16(sp) # start search pos
 	lw t0, 0(a0) # number of items
 	beqz t0, .L_vec_find_not_found # not found if len is zero
+	addi t0, t0, -1
 	sw t0, 20(sp) # end num
 
 .L_vec_find_loop:

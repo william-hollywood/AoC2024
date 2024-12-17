@@ -26,41 +26,43 @@ test_libvec_find:
 	sw t1, 16(t0)
 	li t1, 5
 	sw t1, 20(t0)
+	li t1, 6
+	sw t1, 24(t0) # make sure we don't scan past the end
 
 	mv t0, sp
-	addi t0, t0, 28
-	sw t0, 24(sp) # expected data location (put expected data into 28(sp))
+	addi t0, t0, 32
+	sw t0, 28(sp) # expected data location (put expected data into 28(sp))
 
 	la a0, vec_find1_name
-	lw a1, 24(sp)
+	lw a1, 28(sp)
 	li a2, 0 # expected return pos
 	li a3, 4 # item size
 	li t0, 1 # data to look for
-	sw t0, 28(sp)
+	sw t0, 32(sp)
 	call test_vec_find
 
 	la a0, vec_find2_name
-	lw a1, 24(sp)
+	lw a1, 28(sp)
 	li a2, 2 # expected return pos
 	li a3, 4 # item size
 	li t0, 3 # data to look for
-	sw t0, 28(sp)
+	sw t0, 32(sp)
 	call test_vec_find
 
 	la a0, vec_find3_name
-	lw a1, 24(sp)
+	lw a1, 28(sp)
 	li a2, 4 # expected return pos
 	li a3, 4 # item size
 	li t0, 5 # data to look for
-	sw t0, 28(sp)
+	sw t0, 32(sp)
 	call test_vec_find
 
 	la a0, vec_find4_name
-	lw a1, 24(sp)
+	lw a1, 28(sp)
 	li a2, -1 # expected return pos
 	li a3, 4 # item size
 	li t0, 6 # data to look for
-	sw t0, 28(sp)
+	sw t0, 32(sp)
 	call test_vec_find
 
 	lw ra, 0(sp)
