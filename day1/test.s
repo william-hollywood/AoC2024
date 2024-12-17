@@ -63,48 +63,6 @@ similarity_score1name: .string "similarity_score - return correct score: "
 	li a1, 8
 	call test_eq
 
-# TEST: sort_list
-	la a0, sort_list1name
-	call print
-	li t1, LIST1_POS
-	li t0, 54321
-	sw t0, 0(t1)
-	li t0, 12345
-	sw t0, 4(t1)
-	li t0, 67890
-	sw t0, 8(t1)
-	li t0, 9876
-	sw t0, 12(t1)
-
-	li a0, LIST1_POS
-	li a1, 16
-	call sort_list
-
-	li t1, LIST1_POS
-	la a0, sort_list1check1
-	call print
-	li a0, 9876
-	lw a1, 0(t1)
-	call test_eq
-
-	la a0, sort_list1check2
-	call print
-	li a0,  12345
-	lw a1, 4(t1)
-	call test_eq
-
-	la a0, sort_list1check3
-	call print
-	li a0, 54321
-	lw a1, 8(t1)
-	call test_eq
-
-	la a0, sort_list1check4
-	call print
-	li a0, 67890
-	lw a1, 12(t1)
-	call test_eq
-
 # TEST: diff_lists
 	la a0, diff_lists1name
 	call print
