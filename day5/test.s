@@ -22,6 +22,11 @@ process_page_listsname: .string "process_page_lists - returns sum of successful 
 process_filedata: .string "11|22\n22|33\n\n11,22,33\n22,11,33\n44,55,66"
 process_filename: .string "process_file - file processed and evaluated: "
 
+process_file2data: .string "47|53\n97|13\n97|61\n97|47\n75|29\n61|13\n75|53\n29|13\n97|29\n53|29\n61|53\n97|53\n61|29\n47|13\n75|47\n97|75\n47|61\n75|61\n47|29\n75|13\n53|13\n\n\n75,47,61,53,29\n97,61,53,29,13\n75,29,13\n75,97,47,61,53\n61,13,29\n97,13,75,29,47"
+process_file2name: .string "process_file - provided test\n"
+process_file2check1: .string "\tvalid lines evaluted: "
+process_file2check2: .string "\tinvalid lines sorted to pass rules and summed: "
+
 .equ TMP_VEC, 0x83800000
 .equ RULE_VEC, 0x84000000
 .equ PAGE_LIST_VEC, 0x84800000
@@ -267,6 +272,27 @@ process_filename: .string "process_file - file processed and evaluated: "
 	li a2, PAGE_LIST_VEC
 	call process_file
 	li a1, 77
+	call test_eq
+
+	la a0, process_file2name
+	call print
+
+	la a0, process_file2data
+	li a1, RULE_VEC
+	li a2, PAGE_LIST_VEC
+	call process_file
+	sw a0, 4(sp)
+	sw a1, 8(sp)
+	la a0, process_file2check1
+	call print
+	lw a0, 4(sp)
+	li a1, 143
+	call test_eq
+
+	la a0, process_file2check2
+	call print
+	lw a0, 8(sp)
+	li a1, 123
 	call test_eq
 
 	addi sp, sp, 16

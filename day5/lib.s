@@ -183,8 +183,23 @@ process_single_page_list:
 	call vec_at
 	# return page num
 	lw a1, 0(a0)
+	mv a2, zero
 	j .L_process_single_page_list_exit
 .L_process_single_page_list_fail:
+	# Sort current page list so that they pass
+	# TOOD: Factor out list check logic from this func, try all permutations until it passes?
+
+	# get middle number from page list
+	lw a0, 12(sp)
+	# (PAGE_LIST_VEC-len / 2) + 1
+	lw a1, 0(a0)
+	li t0, 2
+	div a1, a1, t0
+	li a2, 4
+	call vec_at
+	# return page num
+	lw a2, 0(a0)
+
 	mv a1, zero
 .L_process_single_page_list_exit:
 	lw a0, 4(sp)
@@ -201,7 +216,7 @@ process_single_page_list:
 # a0 - sum of all of the middle pages of valid lists
 .global process_page_lists
 process_page_lists:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
 
 	sw a1, 4(sp)
@@ -217,14 +232,18 @@ process_page_lists:
 	lw t0, 12(sp)
 	add t0, t0, a1
 	sw t0, 12(sp)
+	lw t0, 16(sp)
+	add t0, t0, a2
+	sw t0, 16(sp)
 	lb t0, 0(a0)
 	bnez t0, .L_process_page_lists_loop
 
 	# return sum
 	lw a0, 12(sp)
+	lw a1, 16(sp)
 
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret
 
 # process_file - process an input file returning the sum of all of the middle pages of valid lists
