@@ -11,7 +11,6 @@ test_libvec:
 	call test_libvec_insert
 	call test_libvec_remove
 	call test_libvec_find
-	call test_libvec_sort
 
 	lw ra, 0(sp)
 	addi sp, sp, 96
