@@ -1,3 +1,13 @@
+.section .data
+rulefailstr: .string "rule fail: ("
+list_pass_str: .string "OK ("
+comma: .string ", "
+endbracket: .string ")"
+newline: .string "\n"
+
+.equ TMP_STR, 0x83800000
+
+
 .section .lib
 # parse_all_rules - parse all the rules in the input until a double newline
 # a0 - buffer pos
@@ -120,6 +130,30 @@ process_rule:
 	li a0, 1
 	j .L_process_rule_exit
 .L_process_rule_fail:
+bp:
+	la a0, rulefailstr
+	call print
+
+	lw a0, 4(sp)
+	li a1, TMP_STR
+	call itos
+
+	li a0, TMP_STR
+	call print
+
+	la a0, comma
+	call print
+
+	lw a0, 8(sp)
+	li a1, TMP_STR
+	call itos
+
+	li a0, TMP_STR
+	call print
+
+	la a0, endbracket
+	call print
+
 	li a0, 0
 
 .L_process_rule_exit:
@@ -146,6 +180,32 @@ process_single_page_list:
 	mv a1, a2
 	call parse_page_list
 	sw a0, 4(sp)
+
+	mv s0, zero
+	lw t0, 12(sp)
+	lw s1, 0(t0)
+	lw s2, 12(sp)
+	addi s2, s2, 4
+	j 2f
+1:
+	addi s0, s0, 1
+	addi s2, s2, 4
+2:
+	beq s0, s1, 3f
+
+	lw a0, 0(s2)
+	li a1, TMP_STR
+	call itos
+
+	li a0, TMP_STR
+	call print
+
+	la a0, comma
+	call print
+
+	j 1b
+3:
+
 	# for rule in rule list
 	sw zero, 16(sp) # start at zero
 	lw t0, 8(sp)
@@ -173,6 +233,9 @@ process_single_page_list:
 	j .L_process_single_page_list_loop
 .L_process_single_page_list_end_loop:
 
+	la a0, list_pass_str
+	call print
+
 	# get middle number from page list
 	lw a0, 12(sp)
 	# (PAGE_LIST_VEC-len / 2) + 1
@@ -183,8 +246,34 @@ process_single_page_list:
 	call vec_at
 	# return page num
 	lw a1, 0(a0)
+
+	mv s0, a0
+	mv s1, a1
+
+	lw a0, 0(a0)
+	li a1, TMP_STR
+	call itos
+
+	li a0, TMP_STR
+	call print
+
+	la a0, endbracket
+	call print
+
+	la a0, newline
+	call print
+
+	mv a0, s0
+	mv a1, s1
 	j .L_process_single_page_list_exit
 .L_process_single_page_list_fail:
+
+	mv s0, a0
+
+	la a0, newline
+	call print
+
+	mv a0, s0
 	mv a1, zero
 .L_process_single_page_list_exit:
 	lw a0, 4(sp)
