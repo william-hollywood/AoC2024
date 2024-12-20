@@ -1,3 +1,11 @@
+.section .data
+rulefailstr: .string "rule fail: ("
+list_pass_str: .string "OK ("
+comma: .string ", "
+endbracket: .string ") "
+newline: .string "\n"
+.equ TMP_STR, 0x83800000
+
 .section .lib
 # parse_all_rules - parse all the rules in the input until a double newline
 # a0 - buffer pos
@@ -120,6 +128,24 @@ process_rule:
 	li a0, 1
 	j .L_process_rule_exit
 .L_process_rule_fail:
+bp:
+	la a0, rulefailstr
+	call print
+	lw a0, 4(sp)
+	li a1, TMP_STR
+	call itos
+	li a0, TMP_STR
+	call print
+	la a0, comma
+	call print
+	lw a0, 8(sp)
+	li a1, TMP_STR
+	call itos
+	li a0, TMP_STR
+	call print
+	la a0, endbracket
+	call print
+
 	li a0, 0
 
 .L_process_rule_exit:
@@ -127,13 +153,63 @@ process_rule:
 	addi sp, sp, 32
 	ret
 
-# process_single_page_list - process a single page and evaluate the rules of it
+# evaluate_rules - evaluate the rules on a given page list
+# a0 - RULE_VEC
+# a1 - PAGE_LIST_VEC
+# Returns
+# a0 - 1 if the list is valid, 0 otherwise
+evaluate_rules:
+	addi sp, sp, -32
+	sw ra, 0(sp)
+
+	sw a0, 4(sp)
+	sw a1, 8(sp)
+	# for rule in rule list
+	sw zero, 12(sp) # start at zero
+	lw t0, 4(sp)
+	lw t0, 0(t0)
+	sw t0, 16(sp) # loop until
+.L_evaluate_rules_loop:
+	lw a0, 4(sp)
+	lw a1, 12(sp)
+	li a2, 8
+	call vec_at
+	lw a1, 4(a0)
+	lw a0, 0(a0)
+	lw a2, 8(sp)
+	# process_rule
+	call process_rule
+	# if rule not met, return zero
+	beqz a0, .L_evaluate_rules_fail
+	lw t0, 12(sp)
+	addi t0, t0, 1
+	lw t1, 16(sp)
+	# if end of RULE_VEC, jump end of loop
+	beq t0, t1, .L_evaluate_rules_end_loop
+	sw t0, 12(sp)
+	# jump start of loop
+	j .L_evaluate_rules_loop
+.L_evaluate_rules_end_loop:
+	la a0, list_pass_str
+	call print
+	li a0, 1
+	j .L_evaluate_rules_exit
+.L_evaluate_rules_fail:
+	li a0, 0
+.L_evaluate_rules_exit:
+
+	lw ra, 0(sp)
+	addi sp, sp, 32
+	ret
+
+# process_single_page_list - parse and process a single page and evaluate the rules of it
 # a0 - buffer pos
 # a1 - RULE_VEC pos
 # a2 - PAGE_LIST_VEC pos
 # Returns
 # a0 - cursor to next char after pages
 # a1 - 0 if invalid list, middle page num if valid
+# a2 - 0 if valid list, middle page num of rearranged if invalid
 .global process_single_page_list
 process_single_page_list:
 	addi sp, sp, -32
@@ -146,33 +222,35 @@ process_single_page_list:
 	mv a1, a2
 	call parse_page_list
 	sw a0, 4(sp)
-	# for rule in rule list
-	sw zero, 16(sp) # start at zero
-	lw t0, 8(sp)
-	lw t0, 0(t0)
-	sw t0, 20(sp) # loop until
-.L_process_single_page_list_loop:
-	lw a0, 8(sp)
-	lw a1, 16(sp)
-	li a2, 8
-	call vec_at
-	lw a1, 4(a0)
-	lw a0, 0(a0)
-	lw a2, 12(sp)
-	# process_rule
-	call process_rule
-	# if rule not met, return zero
-	beqz a0, .L_process_single_page_list_fail
-	lw t0, 16(sp)
-	addi t0, t0, 1
-	lw t1, 20(sp)
-	# if end of RULE_VEC, jump end of loop
-	beq t0, t1, .L_process_single_page_list_end_loop
-	sw t0, 16(sp)
-	# jump start of loop
-	j .L_process_single_page_list_loop
-.L_process_single_page_list_end_loop:
 
+	la a0, newline
+	call print
+	mv s0, zero
+	lw t0, 12(sp)
+	lw s1, 0(t0)
+	lw s2, 12(sp)
+	addi s2, s2, 4
+	j 2f
+1:
+	addi s0, s0, 1
+	addi s2, s2, 4
+2:
+	beq s0, s1, 3f
+	lw a0, 0(s2)
+	li a1, TMP_STR
+	call itos
+	li a0, TMP_STR
+	call print
+	la a0, comma
+	call print
+	j 1b
+3:
+
+	lw a0, 8(sp)
+	lw a1, 12(sp)
+	call evaluate_rules
+
+	beqz a0, .L_process_single_page_list_fail
 	# get middle number from page list
 	lw a0, 12(sp)
 	# (PAGE_LIST_VEC-len / 2) + 1
@@ -184,11 +262,21 @@ process_single_page_list:
 	# return page num
 	lw a1, 0(a0)
 	mv a2, zero
+
+	mv s0, a0
+	mv s1, a1
+	lw a0, 0(a0)
+	li a1, TMP_STR
+	call itos
+	li a0, TMP_STR
+	call print
+	la a0, endbracket
+	call print
+	mv a0, s0
+	mv a1, s1
+
 	j .L_process_single_page_list_exit
 .L_process_single_page_list_fail:
-	# Sort current page list so that they pass
-	# TOOD: Factor out list check logic from this func, try all permutations until it passes?
-
 	# get middle number from page list
 	lw a0, 12(sp)
 	# (PAGE_LIST_VEC-len / 2) + 1
@@ -198,10 +286,11 @@ process_single_page_list:
 	li a2, 4
 	call vec_at
 	# return page num
-	lw a2, 0(a0)
 
 	mv a1, zero
+	lw a2, 0(a0)
 .L_process_single_page_list_exit:
+
 	lw a0, 4(sp)
 
 	lw ra, 0(sp)
@@ -268,4 +357,34 @@ process_file:
 
 	lw ra, 0(sp)
 	addi sp, sp, 16
+	ret
+
+# recurse_gen_list - recursively generate all permutations of a list
+# a0 - Remaining items vector pos
+# a1 - current page list vector
+# a2 - RULE_VEC pos
+# returns
+# a0 - 0 if not a valid permutations, else zero
+.global recurse_gen_list
+recurse_gen_list:
+	addi sp, sp, -32
+	sw ra, 0(sp)
+	# The idea here is that a0 and a1, do not need to be duplicated
+	# if 0(a0) == 0
+	# 	return middle number of a1
+	# else
+	# 	for add in 0(a0)
+	# 		remove add from remaining
+	# 		for insert_pos in len(a1)+1
+	# 			insert a0(add) into a1(inset_pos)
+	# 			if rules match
+	# 				call recurse_gen_list
+	# 				if return != 0
+	# 					return return
+	# 			remove add from a1(insert_pos)
+	# 		add add back into remaining
+	# 	return 0
+
+	lw ra, 0(sp)
+	addi sp, sp, 32
 	ret
