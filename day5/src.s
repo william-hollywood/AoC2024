@@ -45,7 +45,7 @@ part2text: .string "Part 2: Sum sorted incorrect lines\nAnswer: "
 	la a0, newline
 	call print
 
-	la a0, part1text
+	la a0, part2text
 	call print
 
 	lw a0, 4(sp)

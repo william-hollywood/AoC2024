@@ -3,6 +3,7 @@ rulefailstr: .string "rule fail: ("
 list_pass_str: .string "OK ("
 comma: .string ", "
 endbracket: .string ") "
+endbracket2: .string "[2]) "
 newline: .string "\n"
 .equ TMP_STR, 0x82000000
 .equ TMP_VEC, 0x82800000
@@ -164,7 +165,6 @@ evaluate_rules:
 
 	sw a0, 4(sp)
 	sw a1, 8(sp)
-
 	la a0, newline
 	call print
 	mv s0, zero
@@ -187,6 +187,7 @@ evaluate_rules:
 	call print
 	j 1b
 3:
+
 
 	# for rule in rule list
 	sw zero, 12(sp) # start at zero
@@ -216,6 +217,7 @@ evaluate_rules:
 .L_evaluate_rules_end_loop:
 	la a0, list_pass_str
 	call print
+
 	li a0, 1
 	j .L_evaluate_rules_exit
 .L_evaluate_rules_fail:
@@ -281,8 +283,19 @@ process_single_page_list:
 
 	lw a0, 12(sp)
 	li a1, TMP_VEC
+	sw zero, 0(a1)
 	lw a2, 8(sp)
 	call recurse_gen_list
+	mv s0, a0
+	li a1, TMP_STR
+	call itos
+	li a0, TMP_STR
+	call print
+	la a0, endbracket2
+	call print
+
+	mv a0, s0
+
 	mv a2, a0
 	mv a1, zero
 .L_process_single_page_list_exit:
@@ -307,6 +320,7 @@ process_page_lists:
 	sw a1, 4(sp)
 	sw a2, 8(sp)
 	sw zero, 12(sp) # sum counter
+	sw zero, 16(sp) # sum counter
 	addi a0, a0, -1
 .L_process_page_lists_loop:
 	lb t0, 0(a0)
@@ -429,7 +443,6 @@ recurse_gen_list:
 	lw a0, 4(sp)
 	lw a1, 8(sp)
 	lw a2, 12(sp)
-bp:
 	call recurse_gen_list
 	# 				if return != 0
 	beqz a0, 1f
