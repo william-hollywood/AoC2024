@@ -1,11 +1,4 @@
 .section .data
-rulefailstr: .string "rule fail: ("
-list_pass_str: .string "OK ("
-comma: .string ", "
-endbracket: .string ") "
-endbracket2: .string "[2]) "
-newline: .string "\n"
-.equ TMP_STR, 0x82000000
 .equ TMP_VEC, 0x82800000
 
 .section .lib
@@ -130,23 +123,6 @@ process_rule:
 	li a0, 1
 	j .L_process_rule_exit
 .L_process_rule_fail:
-	la a0, rulefailstr
-	call print
-	lw a0, 4(sp)
-	li a1, TMP_STR
-	call itos
-	li a0, TMP_STR
-	call print
-	la a0, comma
-	call print
-	lw a0, 8(sp)
-	li a1, TMP_STR
-	call itos
-	li a0, TMP_STR
-	call print
-	la a0, endbracket
-	call print
-
 	li a0, 0
 
 .L_process_rule_exit:
@@ -165,29 +141,6 @@ evaluate_rules:
 
 	sw a0, 4(sp)
 	sw a1, 8(sp)
-	la a0, newline
-	call print
-	mv s0, zero
-	lw t0, 8(sp)
-	lw s1, 0(t0)
-	lw s2, 8(sp)
-	addi s2, s2, 4
-	j 2f
-1:
-	addi s0, s0, 1
-	addi s2, s2, 4
-2:
-	beq s0, s1, 3f
-	lw a0, 0(s2)
-	li a1, TMP_STR
-	call itos
-	li a0, TMP_STR
-	call print
-	la a0, comma
-	call print
-	j 1b
-3:
-
 
 	# for rule in rule list
 	sw zero, 12(sp) # start at zero
@@ -215,9 +168,6 @@ evaluate_rules:
 	# jump start of loop
 	j .L_evaluate_rules_loop
 .L_evaluate_rules_end_loop:
-	la a0, list_pass_str
-	call print
-
 	li a0, 1
 	j .L_evaluate_rules_exit
 .L_evaluate_rules_fail:
@@ -266,18 +216,6 @@ process_single_page_list:
 	lw a1, 0(a0)
 	mv a2, zero
 
-	mv s0, a0
-	mv s1, a1
-	lw a0, 0(a0)
-	li a1, TMP_STR
-	call itos
-	li a0, TMP_STR
-	call print
-	la a0, endbracket
-	call print
-	mv a0, s0
-	mv a1, s1
-
 	j .L_process_single_page_list_exit
 .L_process_single_page_list_fail:
 
@@ -286,15 +224,6 @@ process_single_page_list:
 	sw zero, 0(a1)
 	lw a2, 8(sp)
 	call recurse_gen_list
-	mv s0, a0
-	li a1, TMP_STR
-	call itos
-	li a0, TMP_STR
-	call print
-	la a0, endbracket2
-	call print
-
-	mv a0, s0
 
 	mv a2, a0
 	mv a1, zero
