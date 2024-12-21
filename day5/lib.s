@@ -4,7 +4,8 @@ list_pass_str: .string "OK ("
 comma: .string ", "
 endbracket: .string ") "
 newline: .string "\n"
-.equ TMP_STR, 0x83800000
+.equ TMP_STR, 0x82000000
+.equ TMP_VEC, 0x82800000
 
 .section .lib
 # parse_all_rules - parse all the rules in the input until a double newline
@@ -128,7 +129,6 @@ process_rule:
 	li a0, 1
 	j .L_process_rule_exit
 .L_process_rule_fail:
-bp:
 	la a0, rulefailstr
 	call print
 	lw a0, 4(sp)
@@ -164,6 +164,30 @@ evaluate_rules:
 
 	sw a0, 4(sp)
 	sw a1, 8(sp)
+
+	la a0, newline
+	call print
+	mv s0, zero
+	lw t0, 8(sp)
+	lw s1, 0(t0)
+	lw s2, 8(sp)
+	addi s2, s2, 4
+	j 2f
+1:
+	addi s0, s0, 1
+	addi s2, s2, 4
+2:
+	beq s0, s1, 3f
+	lw a0, 0(s2)
+	li a1, TMP_STR
+	call itos
+	li a0, TMP_STR
+	call print
+	la a0, comma
+	call print
+	j 1b
+3:
+
 	# for rule in rule list
 	sw zero, 12(sp) # start at zero
 	lw t0, 4(sp)
@@ -223,29 +247,6 @@ process_single_page_list:
 	call parse_page_list
 	sw a0, 4(sp)
 
-	la a0, newline
-	call print
-	mv s0, zero
-	lw t0, 12(sp)
-	lw s1, 0(t0)
-	lw s2, 12(sp)
-	addi s2, s2, 4
-	j 2f
-1:
-	addi s0, s0, 1
-	addi s2, s2, 4
-2:
-	beq s0, s1, 3f
-	lw a0, 0(s2)
-	li a1, TMP_STR
-	call itos
-	li a0, TMP_STR
-	call print
-	la a0, comma
-	call print
-	j 1b
-3:
-
 	lw a0, 8(sp)
 	lw a1, 12(sp)
 	call evaluate_rules
@@ -277,18 +278,13 @@ process_single_page_list:
 
 	j .L_process_single_page_list_exit
 .L_process_single_page_list_fail:
-	# get middle number from page list
-	lw a0, 12(sp)
-	# (PAGE_LIST_VEC-len / 2) + 1
-	lw a1, 0(a0)
-	li t0, 2
-	div a1, a1, t0
-	li a2, 4
-	call vec_at
-	# return page num
 
+	lw a0, 12(sp)
+	li a1, TMP_VEC
+	lw a2, 8(sp)
+	call recurse_gen_list
+	mv a2, a0
 	mv a1, zero
-	lw a2, 0(a0)
 .L_process_single_page_list_exit:
 
 	lw a0, 4(sp)
@@ -364,27 +360,110 @@ process_file:
 # a1 - current page list vector
 # a2 - RULE_VEC pos
 # returns
-# a0 - 0 if not a valid permutations, else zero
+# a0 - 0 if not a valid permutations, else middle page
 .global recurse_gen_list
 recurse_gen_list:
-	addi sp, sp, -32
+	addi sp, sp, -64
 	sw ra, 0(sp)
+
+	sw a0, 4(sp)
+	sw a1, 8(sp)
+	sw a2, 12(sp)
+
 	# The idea here is that a0 and a1, do not need to be duplicated
 	# if 0(a0) == 0
 	# 	return middle number of a1
+	lw t0, 0(a0)
+	bnez t0, .L_recurse_gen_list_try_insert
+
+	# (PAGE_LIST_VEC-len / 2) + 1
+	mv a0, a1
+	lw a1, 0(a0)
+	li t0, 2
+	div a1, a1, t0
+	li a2, 4
+	call vec_at
+	# return page num
+	lw a0, 0(a0)
+	j .L_recurse_gen_list_exit
 	# else
+.L_recurse_gen_list_try_insert:
+	sw zero, 16(sp) # counter
+	sw t0, 20(sp) # end count
+.L_recurse_gen_list_outer_loop:
 	# 	for add in 0(a0)
+	lw t0, 16(sp)
+	lw t1, 20(sp)
+	beq t0, t1, .L_recurse_gen_list_outer_loop_end
 	# 		remove add from remaining
+	lw a0, 4(sp)
+	mv a1, sp
+	addi a1, a1, 24 # 24(sp) is 'add'
+	lw a2, 16(sp)
+	li a3, 4
+	call vec_remove
+
+	sw zero, 32(sp) # inner counter
+	lw t0, 8(sp)
+	lw t0, 0(t0)
+	addi t0, t0, 1
+	sw t0, 36(sp) # inner end count
+.L_recurse_gen_list_inner_loop:
 	# 		for insert_pos in len(a1)+1
-	# 			insert a0(add) into a1(inset_pos)
+	lw t0, 32(sp)
+	lw t1, 36(sp)
+	beq t0, t1, .L_recurse_gen_list_inner_loop_end
+	# 			insert a0(add) into a1(insert_pos)
+	lw a0, 8(sp)
+	mv a1, sp
+	addi a1, a1, 24 # 24(sp) is 'add'
+	lw a2, 32(sp)
+	li a3, 4
+	call vec_insert
 	# 			if rules match
+	lw a0, 12(sp)
+	lw a1, 8(sp)
+	call evaluate_rules
+	beqz a0, 1f
 	# 				call recurse_gen_list
+	lw a0, 4(sp)
+	lw a1, 8(sp)
+	lw a2, 12(sp)
+bp:
+	call recurse_gen_list
 	# 				if return != 0
+	beqz a0, 1f
 	# 					return return
+	j .L_recurse_gen_list_exit
+1:
 	# 			remove add from a1(insert_pos)
+	lw a0, 8(sp)
+	mv a1, zero
+	lw a2, 32(sp)
+	li a3, 4
+	call vec_remove
+	# inc counter, repeat
+	lw t0, 32(sp)
+	addi t0, t0, 1
+	sw t0, 32(sp)
+	j .L_recurse_gen_list_inner_loop
+.L_recurse_gen_list_inner_loop_end:
 	# 		add add back into remaining
+	lw a0, 4(sp)
+	mv a1, sp
+	addi a1, a1, 24 # 24(sp) is 'add'
+	lw a2, 16(sp)
+	li a3, 4
+	call vec_insert
+	lw t0, 16(sp)
+	addi t0, t0, 1
+	sw t0, 16(sp)
+	j .L_recurse_gen_list_outer_loop
+.L_recurse_gen_list_outer_loop_end:
 	# 	return 0
+	li a0, 0
+.L_recurse_gen_list_exit:
 
 	lw ra, 0(sp)
-	addi sp, sp, 32
+	addi sp, sp, 64
 	ret

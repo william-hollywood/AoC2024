@@ -27,6 +27,10 @@ process_file2name: .string "process_file - provided test\n"
 process_file2check1: .string "\tvalid lines evaluted: "
 process_file2check2: .string "\tinvalid lines sorted to pass rules and summed: "
 
+recurse_gen_list1name: .string "recurse_gen_list - when called with 0 remaining, middle page returned: "
+recurse_gen_list2name: .string "recurse_gen_list - single page to order: "
+recurse_gen_list3name: .string "recurse_gen_list - three pages to order: "
+
 .equ TMP_VEC, 0x83800000
 .equ RULE_VEC, 0x84000000
 .equ PAGE_LIST_VEC, 0x84800000
@@ -70,6 +74,91 @@ process_file2check2: .string "\tinvalid lines sorted to pass rules and summed: "
 1:
 	li a1, 0
 	call test_eq
+
+# TEST recurse_gen_list
+	la a0, recurse_gen_list1name
+	call print
+
+	# Populate the rule/page lists
+	li t0, TMP_VEC # Remining items vector
+	li t1, 0
+	sw t1, 0(t0) # len 0
+
+	li t0, PAGE_LIST_VEC # current page list vector
+	li t1, 1
+	sw t1, 0(t0)
+	li t1, 22
+	sw t1, 4(t0)
+
+	li t0, RULE_VEC # rule vector (duh)
+	li t1, 3
+	sw t1, 0(t0)
+	li t1, 11
+	sw t1, 4(t0)
+	li t1, 22
+	sw t1, 8(t0) # 11|22
+	li t1, 22
+	sw t1, 12(t0)
+	li t1, 33
+	sw t1, 16(t0) # 22|33
+	li t1, 11
+	sw t1, 20(t0)
+	li t1, 22
+	sw t1, 24(t0) # 11|44
+
+	li a0, TMP_VEC
+	li a1, PAGE_LIST_VEC
+	li a2, RULE_VEC
+	call recurse_gen_list
+	li a1, 22
+	call test_eq
+
+	# single page to order
+	la a0, recurse_gen_list2name
+	call print
+
+	li t0, PAGE_LIST_VEC # current page list vector - empty
+	li t1, 0
+	sw t1, 0(t0)
+
+	li t0, TMP_VEC # Remining items vector
+	li t1, 1
+	sw t1, 0(t0)
+	li t1, 11
+	sw t1, 4(t0)
+
+	li a0, TMP_VEC
+	li a1, PAGE_LIST_VEC
+	li a2, RULE_VEC
+	call recurse_gen_list
+	li a1, 11
+	call test_eq
+
+	# three pages to order
+	la a0, recurse_gen_list3name
+	call print
+
+	li t0, PAGE_LIST_VEC # current page list vector - empty
+	li t1, 0
+	sw t1, 0(t0)
+
+	li t0, TMP_VEC # Remining items vector
+	li t1, 3
+	sw t1, 0(t0)
+	li t1, 11
+	sw t1, 4(t0)
+	li t1, 33
+	sw t1, 8(t0)
+	li t1, 22
+	sw t1, 12(t0)
+
+	li a0, TMP_VEC
+	li a1, PAGE_LIST_VEC
+	li a2, RULE_VEC
+	call recurse_gen_list
+	li a1, 22
+	call test_eq
+
 
 # TEST parse_page_list
 

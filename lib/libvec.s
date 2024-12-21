@@ -135,9 +135,10 @@ vec_remove:
 	sw a0, 20(sp)
 
 	lw a1, 8(sp)
+	beqz a1, 1f
 	lw a2, 16(sp)
 	call memcpy
-
+1:
 	lw a0, 4(sp)
 	lw t0, 0(a0)
 	addi t1, t0, -1
