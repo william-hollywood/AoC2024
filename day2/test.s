@@ -34,6 +34,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 # Program main
 .section .text
 	call start
+	call test_start
 	addi sp, sp, -16
 
 # TEST: parse_report
@@ -49,6 +50,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a0, 7
 	li t1, ARRAY_LOC
 	lw a1, 0(t1)
+	la a2, parse_report1check1
 	call test_eq
 
 	la a0, parse_report1check2
@@ -56,6 +58,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a0, 9
 	li t1, ARRAY_LOC
 	lw a1, 4(t1)
+	la a2, parse_report1check2
 	call test_eq
 
 	la a0, parse_report1check3
@@ -63,6 +66,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a0, 10
 	li t1, ARRAY_LOC
 	lw a1, 8(t1)
+	la a2, parse_report1check3
 	call test_eq
 
 	la a0, parse_report1check4
@@ -70,12 +74,14 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a0, 11
 	li t1, ARRAY_LOC
 	lw a1, 12(t1)
+	la a2, parse_report1check4
 	call test_eq
 
 	la a0, parse_report1check5
 	call print
 	li a0, 16
 	lw a1, 0(sp)
+	la a2, parse_report1check5
 	call test_eq
 
 # TEST: is_only_inc_or_dec - all inc
@@ -91,6 +97,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a1, 12
 	call is_only_inc_or_dec
 	li a1, 0
+	la a2, is_only_inc_or_dec1name
 	call test_eq
 
 # TEST: is_only_inc_or_dec - all dec
@@ -106,6 +113,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a1, 12
 	call is_only_inc_or_dec
 	li a1, 0
+	la a2, is_only_inc_or_dec2name
 	call test_eq
 
 # TEST: is_only_inc_or_dec - not all same
@@ -121,6 +129,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a1, 12
 	call is_only_inc_or_dec
 	li a1, 0
+	la a2, is_only_inc_or_dec3name
 	call test_neq
 
 # TEST: distance_check - all close enough
@@ -138,6 +147,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a3, 3
 	call distance_check
 	li a1, 0
+	la a2, distance_check1name
 	call test_eq
 
 # TEST: distance_check - too close together
@@ -154,11 +164,12 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a2, 1
 	li a3, 3
 	call distance_check
+	la a2, distance_check2name
 	li a1, 0
 	call test_neq
 
 # TEST: distance_check - too far apart
-	la a0, distance_check2name
+	la a0, distance_check3name
 	call print
 	li a0, ARRAY_LOC
 	li t0, 1
@@ -172,6 +183,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a3, 3
 	call distance_check
 	li a1, 0
+	la a2, distance_check3name
 	call test_neq
 
 # TEST: is_report_safe - safe
@@ -189,6 +201,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a3, 3
 	call is_report_safe
 	li a1, 0
+	la a2, is_report_safe1name
 	call test_eq
 
 # TEST: is_report_safe - is_only_inc_or_dec fails
@@ -206,6 +219,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a3, 3
 	call is_report_safe
 	li a1, 0
+	la a2, is_report_safe2name
 	call test_neq
 
 # TEST: is_report_safe - distance_check fails
@@ -223,6 +237,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a3, 3
 	call is_report_safe
 	li a1, 0
+	la a2, is_report_safe3name
 	call test_neq
 
 # TEST: count_reports - counts correct
@@ -234,6 +249,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a3, 3
 	call count_reports
 	li a1, 2
+	la a2, count_reports1name
 	call test_eq
 
 # TEST: dampen_arr, first
@@ -256,6 +272,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a0, 2
 	li t1, ARRAY_TMP_LOC
 	lw a1, 0(t1)
+	la a2, dampen_arr1check1
 	call test_eq
 
 	la a0, dampen_arr1check2
@@ -263,6 +280,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a0, 3
 	li t1, ARRAY_TMP_LOC
 	lw a1, 4(t1)
+	la a2, dampen_arr1check2
 	call test_eq
 
 # TEST: dampen_arr, middle
@@ -279,6 +297,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a0, 1
 	li t1, ARRAY_TMP_LOC
 	lw a1, 0(t1)
+	la a2, dampen_arr2check1
 	call test_eq
 
 	la a0, dampen_arr2check2
@@ -286,6 +305,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a0, 3
 	li t1, ARRAY_TMP_LOC
 	lw a1, 4(t1)
+	la a2, dampen_arr2check2
 	call test_eq
 
 # TEST: dampen_arr, last
@@ -302,6 +322,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a0, 1
 	li t1, ARRAY_TMP_LOC
 	lw a1, 0(t1)
+	la a2, dampen_arr3check1
 	call test_eq
 
 	la a0, dampen_arr3check2
@@ -309,6 +330,7 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a0, 2
 	li t1, ARRAY_TMP_LOC
 	lw a1, 4(t1)
+	la a2, dampen_arr3check2
 	call test_eq
 
 # TEST: count_dampened reports - counts correct
@@ -321,7 +343,9 @@ count_dampened_reports1name: .string "count_dampened_reports - counts corect num
 	li a4, ARRAY_TMP_LOC
 	call count_dampened_reports
 	li a1, 3
+	la a2, count_dampened_reports1name
 	call test_eq
 
 # Print end
+	call test_end
 	call end

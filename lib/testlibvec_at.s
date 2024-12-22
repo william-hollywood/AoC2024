@@ -156,9 +156,10 @@ test_libvec_at:
 # a2 - item size
 # a3 - expected item
 test_vec_at:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
 
+	sw a0, 16(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
 	sw a3, 12(sp)
@@ -183,8 +184,9 @@ test_vec_at:
 .L_test_vec_at_end:
 	lw t0, 12(sp)
 	mv a1, t0
+	lw a2, 16(sp)
 	call test_eq
 
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret

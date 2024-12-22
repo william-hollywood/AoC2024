@@ -155,9 +155,10 @@ test_libvec_push:
 # a2 - item size
 # a3 - expected len
 test_vec_push:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
 
+	sw a0, 16(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
 	sw a3, 12(sp)
@@ -184,13 +185,15 @@ test_vec_push:
 	call memcmp
 
 	li a1, 0
+	lw a2, 16(sp)
 	call test_eq
 	j .L_test_vec_push_end
 .L_test_vec_push_fail:
 	li a0, 0
 	li a1, 1
+	lw a2, 16(sp)
 	call test_eq
 .L_test_vec_push_end:
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret

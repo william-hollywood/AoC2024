@@ -38,6 +38,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 # Program main
 .section .text
 	call start
+	call test_start
 	addi sp, sp, -16
 
 # TEST parse_all_rules
@@ -73,6 +74,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	call memcmp
 1:
 	li a1, 0
+	la a2, parse_all_rules1name
 	call test_eq
 
 # TEST recurse_gen_list
@@ -111,6 +113,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	li a2, RULE_VEC
 	call recurse_gen_list
 	li a1, 22
+	la a2, recurse_gen_list1name
 	call test_eq
 
 	# single page to order
@@ -132,6 +135,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	li a2, RULE_VEC
 	call recurse_gen_list
 	li a1, 11
+	la a2, recurse_gen_list2name
 	call test_eq
 
 	# three pages to order
@@ -157,6 +161,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	li a2, RULE_VEC
 	call recurse_gen_list
 	li a1, 22
+	la a2, recurse_gen_list3name
 	call test_eq
 
 
@@ -192,6 +197,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	call memcmp
 1:
 	li a1, 0
+	la a2, parse_page_list1name
 	call test_eq
 
 	la a0, parse_page_list2name
@@ -221,6 +227,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	call memcmp
 1:
 	li a1, 0
+	la a2, parse_page_list2name
 	call test_eq
 
 # TEST process_rule
@@ -246,6 +253,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	li a2, PAGE_LIST_VEC
 	call process_rule
 	li a1, 1
+	la a2, process_rule1_name
 	call test_eq
 
 	la a0, process_rule2_name
@@ -255,6 +263,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	li a2, PAGE_LIST_VEC
 	call process_rule
 	li a1, 0
+	la a2, process_rule2_name
 	call test_eq
 
 	la a0, process_rule3_name
@@ -264,6 +273,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	li a2, PAGE_LIST_VEC
 	call process_rule
 	li a1, 1
+	la a2, process_rule3_name
 	call test_eq
 
 # TEST process_single_page_list
@@ -296,11 +306,13 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	bne a1, t0, 1f
 	li a0, 0
 	li a1, 0
+	la a2, process_single_page_list1name
 	call test_eq
 	j 2f
 1:
 	li a0, 0
 	li a1, 1
+	la a2, process_single_page_list1name
 	call test_eq
 2:
 
@@ -325,11 +337,13 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	bne a1, t0, 1f
 	li a0, 0
 	li a1, 0
+	la a2, process_single_page_list2name
 	call test_eq
 	j 2f
 1:
 	li a0, 0
 	li a1, 1
+	la a2, process_single_page_list2name
 	call test_eq
 2:
 
@@ -349,6 +363,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	li a2, PAGE_LIST_VEC
 	call process_page_lists
 	li a1, 77
+	la a2, process_page_listsname
 	call test_eq
 
 # TEST process_file
@@ -361,6 +376,7 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	li a2, PAGE_LIST_VEC
 	call process_file
 	li a1, 77
+	la a2, process_filename
 	call test_eq
 
 	la a0, process_file2name
@@ -377,14 +393,17 @@ recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 	call print
 	lw a0, 4(sp)
 	li a1, 143
+	la a2, process_file2check1
 	call test_eq
 
 	la a0, process_file2check2
 	call print
 	lw a0, 8(sp)
 	li a1, 123
+	la a2, process_file2check2
 	call test_eq
 
 	addi sp, sp, 16
 # Print end
+	call test_end
 	call end

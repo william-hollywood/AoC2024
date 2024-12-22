@@ -38,6 +38,7 @@ process_memory_string2data: .string "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32
 # Program main
 .section .text
 	call start
+	call test_start
 	addi sp, sp, -16
 # Test - read_until_valid_mul
 	la a0, read_until_valid_mul1name
@@ -89,6 +90,7 @@ process_memory_string2data: .string "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32
 	call process_memory_string
 
 	li a1, 161
+	la a2, process_memory_string1name
 	call test_eq
 
 	la a0, process_memory_string2name
@@ -99,10 +101,12 @@ process_memory_string2data: .string "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32
 	call process_memory_string
 
 	li a1, 48
+	la a2, process_memory_string2name
 	call test_eq
 
 	addi sp, sp, 16
 # Print end
+	call test_end
 	call end
 
 # a0 - addr of test name
@@ -139,6 +143,7 @@ read_until_valid_mul_helper:
 	lw a1, 4(sp) # test data address passed in
 	lw t3, 12(sp)
 	add a1, a1, t3
+	lw a2, 8(sp) # load a2
 	call test_eq
 
 	# check a1 = a5
@@ -146,6 +151,7 @@ read_until_valid_mul_helper:
 	call print
 	lw a0, 40(sp)
 	lw a1, 24(sp)
+	mv a2, a4
 	call test_eq
 
 	# check a2 = a7
@@ -153,6 +159,7 @@ read_until_valid_mul_helper:
 	call print
 	lw a0, 44(sp)
 	lw a1, 32(sp)
+	mv a2, a6
 	call test_eq
 
 	lw ra, 0(sp)

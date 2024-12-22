@@ -103,6 +103,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 # Program main
 .section .text
 	call start
+	call test_start
 	addi sp, sp, -16
 
 # TEST parse_input_file
@@ -137,6 +138,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	call row_col_to_addr
 	lb a0, 0(a0)
 	li a1, '1'
+	la a2, row_col_to_addrdata
 	call test_eq
 
 	la a0, row_col_to_addr2name
@@ -148,6 +150,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	call row_col_to_addr
 	lb a0, 0(a0)
 	li a1, '5'
+	la a2, row_col_to_addr2name
 	call test_eq
 
 	la a0, row_col_to_addr3name
@@ -159,6 +162,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	call row_col_to_addr
 	lb a0, 0(a0)
 	li a1, '9'
+	la a2, row_col_to_addr3name
 	call test_eq
 
 
@@ -179,6 +183,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	mv a2, a4 # str len
 	call memcmp
 	li a1, 0
+	la a2, move_delta_to_str1name
 	call test_eq
 
 	la a0, move_delta_to_str2name
@@ -197,6 +202,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	mv a2, a4 # str len
 	call memcmp
 	li a1, 0
+	la a2, move_delta_to_str2name
 	call test_eq
 
 	la a0, move_delta_to_str3name
@@ -215,6 +221,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	mv a2, a4 # str len
 	call memcmp
 	li a1, 0
+	la a2, move_delta_to_str3name
 	call test_eq
 
 	la a0, move_delta_to_str4name
@@ -233,6 +240,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	mv a2, a4 # str len
 	call memcmp
 	li a1, 0
+	la a2, move_delta_to_str4name
 	call test_eq
 
 	la a0, move_delta_to_str5name
@@ -251,6 +259,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	mv a2, a4 # str len
 	call memcmp
 	li a1, 0
+	la a2, move_delta_to_str5name
 	call test_eq
 
 	la a0, move_delta_to_str6name
@@ -269,6 +278,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	mv a2, a4 # str len
 	call memcmp
 	li a1, 0
+	la a2, move_delta_to_str6name
 	call test_eq
 
 	la a0, move_delta_to_str7name
@@ -287,6 +297,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	mv a2, a4 # str len
 	call memcmp
 	li a1, 0
+	la a2, move_delta_to_str7name
 	call test_eq
 
 	la a0, move_delta_to_str8name
@@ -305,6 +316,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	mv a2, a4 # str len
 	call memcmp
 	li a1, 0
+	la a2, move_delta_to_str8name
 	call test_eq
 
 # TEST seach_pos
@@ -405,6 +417,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	la a1, process_file1search
 	call process_file
 	li a1, process_file1check
+	la a2, process_file1name
 	call test_eq
 
 # TEST search_pos_cross
@@ -419,6 +432,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	call search_pos_cross
 
 	li a1, 1
+	la a2, search_pos_cross1name
 	call test_eq
 
 	la a0, search_pos_cross2name
@@ -431,6 +445,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	call search_pos_cross
 
 	li a1, 0
+	la a2, search_pos_cross2name
 	call test_eq
 
 	la a0, search_pos_cross3name
@@ -443,6 +458,7 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	call search_pos_cross
 
 	li a1, 0
+	la a2, search_pos_cross3name
 	call test_eq
 
 # TEST process_file_cross
@@ -453,16 +469,19 @@ process_file_cross1name: .string "process_file_cross - 10x10 example"
 	la a0, process_file1data
 	call process_file_cross
 	li a1, process_file_cross1check
+	la a2, process_file_cross1name
 	call test_eq
 
 	addi sp, sp, 16
 # Print end
+	call test_end
 	call end
 
 test_parse_input_file:
 	addi sp, sp, -48
 	sw ra, 0(sp)
 
+	sw a1, 44(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
 	sw a3, 12(sp)
@@ -481,12 +500,14 @@ test_parse_input_file:
 	call print
 	lw a0, 12(sp)
 	lw a1, 28(sp)
+	sw a2, 44(sp)
 	call test_eq
 
 	lw a0, 16(sp)
 	call print
 	lw a0, 20(sp)
 	lw a1, 32(sp)
+	sw a2, 44(sp)
 	call test_eq
 
 	la a0, parse_input_filecheck3
@@ -503,6 +524,7 @@ test_parse_input_file:
 	mul a2, t0, t1
 	call memcmp
 	mv a1, zero
+	sw a2, 44(sp)
 	call test_eq
 
 	lw ra, 0(sp)
@@ -510,10 +532,11 @@ test_parse_input_file:
 	ret
 
 test_search_pos:
-	addi sp, sp, -32
+	addi sp, sp, -48
 	sw ra, 0(sp)
 
 	# Store locals
+	sw a0, 32(sp)
 	sw a1, 4(sp) # data
 	sw a2, 8(sp) # row len of data
 	sw a3, 12(sp) # col len of data
@@ -532,8 +555,9 @@ test_search_pos:
 	lw a5, 24(sp)
 	call search_pos
 	lw a1, 28(sp)
+	sw a2, 32(sp)
 	call test_eq
 
 	lw ra, 0(sp)
-	addi sp, sp, 32
+	addi sp, sp, 48
 	ret

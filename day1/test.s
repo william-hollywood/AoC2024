@@ -20,6 +20,7 @@ similarity_score1name: .string "similarity_score - return correct score"
 # Program main
 .section .text
 	call start
+	call test_start
 
 # TEST: load_dual_list, loads 2x2 of numbers
 	la a0, load_dual_list1name
@@ -35,12 +36,15 @@ similarity_score1name: .string "similarity_score - return correct score"
 	li a0, 12345
 	li t1, LIST1_POS
 	lw a1, 0(t1)
+	la a2, load_dual_list1check1
 	call test_eq
 
 	la a0, load_dual_list1check2
 	call print
 	li a0,  9876
+	li t1, LIST1_POS
 	lw a1, 4(t1)
+	la a2, load_dual_list1check2
 	call test_eq
 
 	la a0, load_dual_list1check3
@@ -48,12 +52,15 @@ similarity_score1name: .string "similarity_score - return correct score"
 	li a0, 67890
 	li t1, LIST2_POS
 	lw a1, 0(t1)
+	la a2, load_dual_list1check3
 	call test_eq
 
 	la a0, load_dual_list1check4
 	call print
 	li a0, 54321
+	li t1, LIST2_POS
 	lw a1, 4(t1)
+	la a2, load_dual_list1check4
 	call test_eq
 
 	la a0, load_dual_list1check5
@@ -61,6 +68,7 @@ similarity_score1name: .string "similarity_score - return correct score"
 	mv a0, t6
 	mv a3, a0
 	li a1, 8
+	la a2, load_dual_list1check5
 	call test_eq
 
 # TEST: sort_list
@@ -85,24 +93,31 @@ similarity_score1name: .string "similarity_score - return correct score"
 	call print
 	li a0, 9876
 	lw a1, 0(t1)
+	la a2, sort_list1check1
 	call test_eq
 
 	la a0, sort_list1check2
 	call print
 	li a0,  12345
+	li t1, LIST1_POS
 	lw a1, 4(t1)
+	la a2, sort_list1check2
 	call test_eq
 
 	la a0, sort_list1check3
 	call print
 	li a0, 54321
+	li t1, LIST1_POS
 	lw a1, 8(t1)
+	la a2, sort_list1check3
 	call test_eq
 
 	la a0, sort_list1check4
 	call print
 	li a0, 67890
+	li t1, LIST1_POS
 	lw a1, 12(t1)
+	la a2, sort_list1check4
 	call test_eq
 
 # TEST: diff_lists
@@ -125,6 +140,7 @@ similarity_score1name: .string "similarity_score - return correct score"
 	call diff_lists
 
 	li a1, 3
+	la a2, diff_lists1name
 	call test_eq
 
 # TEST: num_occurances
@@ -147,6 +163,7 @@ similarity_score1name: .string "similarity_score - return correct score"
 	call num_occurances
 
 	li a1, 2
+	la a2, num_occurances1name
 	call test_eq
 
 # TEST: similarity_score
@@ -169,6 +186,8 @@ similarity_score1name: .string "similarity_score - return correct score"
 	call similarity_score
 
 	li a1, 26
+	la a2, similarity_score1name
 	call test_eq
 # Print end
+	call test_end
 	call end

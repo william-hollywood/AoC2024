@@ -40,6 +40,7 @@ zerostr: .string "0"
 # Program main
 .section .text
 	call start
+	call test_start
 
 # TEST: puts, one char
 	la a0, puts1name
@@ -53,6 +54,7 @@ zerostr: .string "0"
 	li t1, 'h'
 	mv a0, t0
 	mv a1, t1
+	la a2, puts1name
 	call test_eq
 
 # TEST: puts two chars, last present
@@ -67,6 +69,7 @@ zerostr: .string "0"
 	li t1, 'a'
 	mv a0, t0
 	mv a1, t1
+	la a2, puts2name
 	call test_eq
 
 # TEST: seek_num, seeks num
@@ -77,6 +80,7 @@ zerostr: .string "0"
 
 	la a1, seek_num1data
 	addi a1, a1, 3 # str + 3 = '1'
+	la a2, seek_num1name
 	call test_eq
 
 # TEST: stoi
@@ -92,6 +96,7 @@ zerostr: .string "0"
 	mv a0, a3
 	li t0, 1094
 	mv a1, t0
+	la a2, stoi1name
 	call test_eq
 
 	la a0, stoi1check2
@@ -99,6 +104,7 @@ zerostr: .string "0"
 	mv a1, a4
 	la a0, stoi1data
 	addi a0, a0, 4
+	la a2, stoi1name
 	call test_eq
 
 # TEST: stoi character before '0'
@@ -108,6 +114,7 @@ zerostr: .string "0"
 	call stoi
 	li t0, 12
 	mv a1, t0
+	la a2, stoi2name
 	call test_eq
 
 # TEST: stoi character after '9'
@@ -117,6 +124,7 @@ zerostr: .string "0"
 	call stoi
 	li t0, 12
 	mv a1, t0
+	la a2, stoi3name
 	call test_eq
 
 # TEST 5.5 - stoi of nothing
@@ -126,6 +134,7 @@ zerostr: .string "0"
 	call stoi
 	li t0, 0
 	mv a1, t0
+	la a2, stoi4name
 	call test_eq
 
 # TEST: memcmp
@@ -136,6 +145,7 @@ zerostr: .string "0"
 	li a2, 5
 	call memcmp
 	mv a1, zero
+	la a2, memcmp1name
 	call test_eq
 
 	la a0, memcmp2name
@@ -145,6 +155,7 @@ zerostr: .string "0"
 	li a2, 5
 	call memcmp
 	mv a1, zero
+	la a2, memcmp2name
 	call test_neq
 
 # memcpy
@@ -156,6 +167,7 @@ zerostr: .string "0"
 	call memcpy
 	call memcmp
 	mv a1, zero
+	la a2, memcpy1name
 	call test_neq
 
 # TEST: itos normal number
@@ -169,6 +181,7 @@ zerostr: .string "0"
 	li a2, 3
 	call memcmp
 	mv a1, zero
+	la a2, itos1name
 	call test_eq
 
 # TEST: itos negative number
@@ -182,6 +195,7 @@ zerostr: .string "0"
 	li a2, 4
 	call memcmp
 	mv a1, zero
+	la a2, itos2name
 	call test_eq
 
 # TEST: itos zero
@@ -195,9 +209,11 @@ zerostr: .string "0"
 	li a2, 2
 	call memcmp
 	mv a1, zero
+	la a2, itos1name
 	call test_eq
 
 	call test_libvec
-
+bp:
 # Print end
+	call test_end
 	call end

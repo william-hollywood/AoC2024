@@ -95,6 +95,7 @@ test_libvec_remove:
 	li a2, 6
 	call memcmp
 	li a1, 0
+	la a2, vec_remove1_4name
 	call test_eq
 
 # TEST vec_remove 2
@@ -163,6 +164,7 @@ test_libvec_remove:
 	li a2, 8
 	call memcmp
 	li a1, 0
+	la a2, vec_remove2_4name
 	call test_eq
 
 # TEST vec_remove 4
@@ -231,6 +233,7 @@ test_libvec_remove:
 	li a2, 12
 	call memcmp
 	li a1, 0
+	la a2, vec_remove4_4name
 	call test_eq
 
 	lw ra, 0(sp)
@@ -248,6 +251,7 @@ test_vec_remove:
 	addi sp, sp, -32
 	sw ra, 0(sp)
 
+	sw a0, 28(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
 	sw a3, 12(sp)
@@ -275,11 +279,13 @@ test_vec_remove:
 	call memcmp
 
 	li a1, 0
+	lw a2, 28(sp)
 	call test_eq
 	j .L_test_vec_remove_end
 .L_test_vec_remove_fail:
 	li a0, 0
 	li a1, 1
+	lw a2, 28(sp)
 	call test_eq
 .L_test_vec_remove_end:
 

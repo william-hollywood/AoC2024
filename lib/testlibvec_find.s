@@ -75,9 +75,10 @@ test_libvec_find:
 # a2 - expected position
 # a3 - item size
 test_vec_find:
-	addi sp, sp, -16
+	addi sp, sp, -32
 	sw ra, 0(sp)
 
+	sw a0, 16(sp)
 	sw a1, 4(sp)
 	sw a2, 8(sp)
 	sw a3, 12(sp)
@@ -88,8 +89,9 @@ test_vec_find:
 	lw a2, 12(sp)
 	call vec_find
 	lw a1, 8(sp)
+	lw a2, 16(sp)
 	call test_eq
 
 	lw ra, 0(sp)
-	addi sp, sp, 16
+	addi sp, sp, 32
 	ret
