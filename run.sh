@@ -97,27 +97,11 @@ then
 	echo "${RUN_BIN}" > "${RUNNING_FILE_FILE}"
 fi
 
-{
-	if [ "${FILE_CONTENT}" != "" ];
-	then
-		printf "%s\0" "${FILE_CONTENT}" | qemu-system-riscv32 -nographic "${ARGS[@]}" -serial mon:stdio -machine virt -bios "${RUN_BIN}"
-	else
-		qemu-system-riscv32 -nographic "${ARGS[@]}" -serial mon:stdio -machine virt -bios "${RUN_BIN}"
-	fi
-} | tee "./.output.log"
-
-if [ "${TEST}" == "y" ];
+if [ "${FILE_CONTENT}" != "" ];
 then
-	if passed=$(grep "PASSED" "./.output.log");
-	then
-		echo "Total passed: $(echo -e "${passed}" | wc -l)"
-	fi
-	
-	if failed=$(grep "FAILED" "./.output.log");
-	then
-		echo "Total failed: $(echo -e "${failed}" | wc -l)"
-		echo "${failed}"
-	fi
+	printf "%s\0" "${FILE_CONTENT}" | qemu-system-riscv32 -nographic "${ARGS[@]}" -serial mon:stdio -machine virt -bios "${RUN_BIN}"
+else
+	qemu-system-riscv32 -nographic "${ARGS[@]}" -serial mon:stdio -machine virt -bios "${RUN_BIN}"
 fi
 
 if [ "${DEBUG}" == "y" ];

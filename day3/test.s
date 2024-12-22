@@ -1,38 +1,38 @@
 .section .data
 read_until_valid_mul1name: .string "read_until_valid_mul - valid mul command found:\n"
 read_until_valid_mul1data: .string "mul(10,20)abc"
-read_until_valid_mul1check1: .string "\ta0 = char after ')': "
+read_until_valid_mul1check1: .string "\ta0 = char after ')'"
 .equ read_until_valid_mul1check1data, 10
-read_until_valid_mul1check2: .string "\ta1 = 10: "
+read_until_valid_mul1check2: .string "\ta1 = 10"
 .equ read_until_valid_mul1check2data, 10
-read_until_valid_mul1check3: .string "\ta2 = 20: "
+read_until_valid_mul1check3: .string "\ta2 = 20"
 .equ read_until_valid_mul1check3data, 20
 read_until_valid_mul2name: .string "read_until_valid_mul - incorrect name not detected as mul:\n"
 read_until_valid_mul2data: .string "nul(10,20)abc"
-read_until_valid_mul2check1: .string "\ta0 = end of string: "
+read_until_valid_mul2check1: .string "\ta0 = end of string"
 .equ read_until_valid_mul2check1data, 13
-read_until_valid_mul2check2: .string "\ta1 = 0: "
+read_until_valid_mul2check2: .string "\ta1 = 0"
 .equ read_until_valid_mul2check2data, 0
-read_until_valid_mul2check3: .string "\ta2 = 0: "
+read_until_valid_mul2check3: .string "\ta2 = 0"
 read_until_valid_mul3name: .string "read_until_valid_mul - number too large :\n"
 read_until_valid_mul3data: .string "mul(1234,20)abc"
 .equ read_until_valid_mul3check1data, 15
-read_until_valid_mul3check1: .string "\ta0 = end of string: "
-read_until_valid_mul3check2: .string "\ta1 = 0: "
+read_until_valid_mul3check1: .string "\ta0 = end of string"
+read_until_valid_mul3check2: .string "\ta1 = 0"
 .equ read_until_valid_mul3check2data, 0
-read_until_valid_mul3check3: .string "\ta2 = 0: "
+read_until_valid_mul3check3: .string "\ta2 = 0"
 read_until_valid_mul4name: .string "read_until_valid_mul - only one number in mul:\n"
 read_until_valid_mul4data: .string "mul(123)abc"
 .equ read_until_valid_mul4check1data, 11
-read_until_valid_mul4check1: .string "\ta0 = end of string: "
+read_until_valid_mul4check1: .string "\ta0 = end of string"
 .equ read_until_valid_mul4check2data, 0
-read_until_valid_mul4check2: .string "\ta1 = 0: "
-read_until_valid_mul4check3: .string "\ta2 = 0: "
+read_until_valid_mul4check2: .string "\ta1 = 0"
+read_until_valid_mul4check3: .string "\ta2 = 0"
 
-process_memory_string1name: .string "process_memory_string - read all valid: "
+process_memory_string1name: .string "process_memory_string - read all valid"
 process_memory_string1data: .string "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))"
 
-process_memory_string2name: .string "process_memory_string - read all valid (with do/don't toggle): "
+process_memory_string2name: .string "process_memory_string - read all valid (with do/don't toggle)"
 process_memory_string2data: .string "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
 
 # Program main

@@ -2,20 +2,20 @@
 .equ LIST1_POS, 0x84000000
 .equ LIST2_POS, 0x84001000
 load_dual_list1name: .string "load_dual_list - loads numbers into lists:\n"
-load_dual_list1check1: .string "\t[0][0] = 12345: "
-load_dual_list1check2: .string "\t[0][1] =  9876: "
-load_dual_list1check3: .string "\t[1][0] = 67890: "
-load_dual_list1check4: .string "\t[1][1] = 54321: "
-load_dual_list1check5: .string "\tlen = 8: "
+load_dual_list1check1: .string "\t[0][0] = 12345"
+load_dual_list1check2: .string "\t[0][1] =  9876"
+load_dual_list1check3: .string "\t[1][0] = 67890"
+load_dual_list1check4: .string "\t[1][1] = 54321"
+load_dual_list1check5: .string "\tlen = 8"
 load_dual_list1data: .string "12345   67890\n09876   54321\0"
 sort_list1name: .string "sort_list - list gets sorted:\n"
-sort_list1check1: .string "\t[0] =  9876: "
-sort_list1check2: .string "\t[1] = 12345: "
-sort_list1check3: .string "\t[2] = 54321: "
-sort_list1check4: .string "\t[3] = 67890: "
-diff_lists1name: .string "diff_lists - return correct diff: "
-num_occurances1name: .string "num_occurances - return correct number: "
-similarity_score1name: .string "similarity_score - return correct score: "
+sort_list1check1: .string "\t[0] =  9876"
+sort_list1check2: .string "\t[1] = 12345"
+sort_list1check3: .string "\t[2] = 54321"
+sort_list1check4: .string "\t[3] = 67890"
+diff_lists1name: .string "diff_lists - return correct diff"
+num_occurances1name: .string "num_occurances - return correct number"
+similarity_score1name: .string "similarity_score - return correct score"
 
 # Program main
 .section .text

@@ -1,10 +1,10 @@
 .section .data
 .equ TEST_VEC, 0x87000000
 
-vec_find1_name: .string "vec_find - find at start: "
-vec_find2_name: .string "vec_find - find in middle: "
-vec_find3_name: .string "vec_find - find at end: "
-vec_find4_name: .string "vec_find - item not found: "
+vec_find1_name: .string "vec_find - find at start"
+vec_find2_name: .string "vec_find - find in middle"
+vec_find3_name: .string "vec_find - find at end"
+vec_find4_name: .string "vec_find - item not found"
 
 .section .lib
 .global test_libvec_find

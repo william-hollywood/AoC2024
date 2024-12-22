@@ -1,16 +1,16 @@
 .section .data
 .equ TEST_VEC, 0x87000000
 
-vec_push1_1name: .string "vec_push - size 1 initially empty: "
-vec_push1_2name: .string "vec_push - size 1 contains item: "
-vec_push2_1name: .string "vec_push - size 2 initially empty: "
-vec_push2_2name: .string "vec_push - size 2 contains item: "
-vec_push4_1name: .string "vec_push - size 4 initially empty: "
-vec_push4_2name: .string "vec_push - size 4 contains item: "
-vec_push8_1name: .string "vec_push - size 8 initially empty: "
-vec_push8_2name: .string "vec_push - size 8 contains item: "
-vec_push12_1name: .string "vec_push - size 12 initially empty: "
-vec_push12_2name: .string "vec_push - size 12 contains item: "
+vec_push1_1name: .string "vec_push - size 1 initially empty"
+vec_push1_2name: .string "vec_push - size 1 contains item"
+vec_push2_1name: .string "vec_push - size 2 initially empty"
+vec_push2_2name: .string "vec_push - size 2 contains item"
+vec_push4_1name: .string "vec_push - size 4 initially empty"
+vec_push4_2name: .string "vec_push - size 4 contains item"
+vec_push8_1name: .string "vec_push - size 8 initially empty"
+vec_push8_2name: .string "vec_push - size 8 contains item"
+vec_push12_1name: .string "vec_push - size 12 initially empty"
+vec_push12_2name: .string "vec_push - size 12 contains item"
 
 .section .lib
 .global test_libvec_push

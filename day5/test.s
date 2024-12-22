@@ -1,35 +1,35 @@
 .section .data
 parse_all_rulesdata: .string "12|34\n56|78\n91|23\n\nS" # 'S' used to check what char we return
-parse_all_rules1name: .string "parse_all_rules - loads page number rules into vector: "
+parse_all_rules1name: .string "parse_all_rules - loads page number rules into vector"
 
 parse_page_list1data: .string "12,34,56,78,90\n" # see above
-parse_page_list1name: .string "parse_all_rules - loads page numbers from line into vector: "
+parse_page_list1name: .string "parse_all_rules - loads page numbers from line into vector"
 parse_page_list2data: .string "87,65,43,21" # see above
-parse_page_list2name: .string "parse_all_rules - loads page numbers from line into vector end of file: "
+parse_page_list2name: .string "parse_all_rules - loads page numbers from line into vector end of file"
 
-process_rule1_name: .string "process rule - ensure p1 comes before p2: "
-process_rule2_name: .string "process rule - fail if p2 comes before p1: "
-process_rule3_name: .string "process rule - rule ignored if page not found: "
+process_rule1_name: .string "process rule - ensure p1 comes before p2"
+process_rule2_name: .string "process rule - fail if p2 comes before p1"
+process_rule3_name: .string "process rule - rule ignored if page not found"
 
 process_single_page_listdata: .string "11,22,33,44,55\n"
-process_single_page_list1name: .string "process_single_page_list - returns middle page if all rules pass: "
-process_single_page_list2name: .string "process_single_page_list - returns zero if any rule fails: "
+process_single_page_list1name: .string "process_single_page_list - returns middle page if all rules pass"
+process_single_page_list2name: .string "process_single_page_list - returns zero if any rule fails"
 
 # using rules 11|22 and 22|33, 77 will be returned
 process_page_listsdata: .string "11,22,33\n22,11,33\n44,55,66"
-process_page_listsname: .string "process_page_lists - returns sum of successful rows: "
+process_page_listsname: .string "process_page_lists - returns sum of successful rows"
 
 process_filedata: .string "11|22\n22|33\n\n11,22,33\n22,11,33\n44,55,66"
-process_filename: .string "process_file - file processed and evaluated: "
+process_filename: .string "process_file - file processed and evaluated"
 
 process_file2data: .string "47|53\n97|13\n97|61\n97|47\n75|29\n61|13\n75|53\n29|13\n97|29\n53|29\n61|53\n97|53\n61|29\n47|13\n75|47\n97|75\n47|61\n75|61\n47|29\n75|13\n53|13\n\n75,47,61,53,29\n97,61,53,29,13\n75,29,13\n75,97,47,61,53\n61,13,29\n97,13,75,29,47"
 process_file2name: .string "process_file - provided test\n"
-process_file2check1: .string "\tvalid lines evaluted: "
-process_file2check2: .string "\tinvalid lines sorted to pass rules and summed: "
+process_file2check1: .string "\tvalid lines evaluted"
+process_file2check2: .string "\tinvalid lines sorted to pass rules and summed"
 
-recurse_gen_list1name: .string "recurse_gen_list - when called with 0 remaining, middle page returned: "
-recurse_gen_list2name: .string "recurse_gen_list - single page to order: "
-recurse_gen_list3name: .string "recurse_gen_list - three pages to order: "
+recurse_gen_list1name: .string "recurse_gen_list - when called with 0 remaining, middle page returned"
+recurse_gen_list2name: .string "recurse_gen_list - single page to order"
+recurse_gen_list3name: .string "recurse_gen_list - three pages to order"
 
 .equ TMP_VEC, 0x83800000
 .equ RULE_VEC, 0x84000000
